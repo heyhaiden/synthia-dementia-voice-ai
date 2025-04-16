@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import Image from "@/components/ui/image"; // We'll create this component
 
 interface HeroSectionProps {
   onStartDemo: () => void;
@@ -9,7 +10,7 @@ interface HeroSectionProps {
 
 export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
   return (
-    <header className="relative bg-white">
+    <header className="relative bg-white mt-16"> {/* Added top margin */}
       <div className="absolute inset-0 bg-gradient-to-b from-gray-50 to-transparent" />
       <div className="relative container mx-auto px-4 py-8">
         <div className="flex flex-col items-center justify-between gap-8">
@@ -67,6 +68,15 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
                     Watch the demo
                   </Button>
                 </div>
+              </div>
+              
+              {/* New placeholder image section */}
+              <div className="hidden md:block flex-1">
+                <img 
+                  src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81" 
+                  alt="Healthcare technology" 
+                  className="w-full max-w-md h-auto object-cover rounded-lg shadow-lg"
+                />
               </div>
             </div>
           )}
