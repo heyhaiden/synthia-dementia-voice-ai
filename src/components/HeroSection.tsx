@@ -63,11 +63,11 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
                 </div>
                 
                 <h1 className="text-5xl md:text-7xl font-semibold text-gray-900 tracking-tight mb-6 leading-[1.1]">
-                  The future of healthcare assistance
+                  The future of healthcare training
                 </h1>
                 <p className="text-xl md:text-2xl text-gray-500 mb-10 leading-relaxed max-w-xl mx-auto md:mx-0">
                   Experience personalized caregiver support through natural voice conversations 
-                  with our AI-powered assistant.
+                  with our conversational AI assistant.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                   <Button 
