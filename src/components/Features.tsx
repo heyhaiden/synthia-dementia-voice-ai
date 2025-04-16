@@ -1,5 +1,5 @@
 
-import { Brain, Mic, VoiceNetwork, BookOpen } from "lucide-react";
+import { Brain, Mic, Volume2, BookOpen } from "lucide-react";
 
 export const Features = () => {
   const features = [
@@ -16,7 +16,7 @@ export const Features = () => {
     {
       title: "Lifelike Voice Responses",
       description: "Natural-sounding voice responses that feel like talking to a real caregiver assistant.",
-      icon: VoiceNetwork
+      icon: Volume2
     },
     {
       title: "Healthcare Knowledge Base",
