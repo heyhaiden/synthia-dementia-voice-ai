@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface HeroSectionProps {
   onStartDemo: () => void;
@@ -7,6 +8,18 @@ interface HeroSectionProps {
 }
 
 export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleDemoClick = () => {
+    if (location.pathname === "/") {
+      navigate("/demo");
+      onStartDemo();
+    } else {
+      navigate("/");
+    }
+  };
+
   return (
     <header className="relative bg-white mt-16">
       <div className="absolute inset-0 bg-gradient-to-b from-white to-transparent" />
@@ -16,11 +29,17 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
             <div className="w-full flex items-center justify-between">
               <Button 
                 variant="outline" 
-                onClick={() => window.location.href = '/'}
+                onClick={handleDemoClick}
                 className="flex items-center gap-2"
               >
-                <ArrowLeft className="h-4 w-4" />
-                Back to Home
+                {showDemo ? (
+                  <>
+                    <ArrowLeft className="h-4 w-4" />
+                    Back to Home
+                  </>
+                ) : (
+                  "Try Beatriz"
+                )}
               </Button>
               <h1 className="text-2xl font-semibold text-gray-900">
                 Chat with Beatriz
