@@ -115,8 +115,8 @@ export const ChatInterface = () => {
   };
   
   return (
-    <div className="max-w-4xl mx-auto bg-beatriz-light rounded-2xl overflow-hidden shadow-xl border border-beatriz/20">
-      <div className="bg-beatriz p-4 text-white flex items-center justify-between">
+    <div className="max-w-4xl mx-auto bg-white rounded-2xl overflow-hidden shadow-xl border border-gray-200">
+      <div className="bg-blue-600 p-4 text-white flex items-center justify-between">
         <div className="flex items-center">
           <div className="h-10 w-10 rounded-full bg-white p-0.5 mr-3">
             <img 
@@ -148,7 +148,7 @@ export const ChatInterface = () => {
         )}
       </div>
       
-      <div className="p-4 h-[500px] overflow-y-auto bg-white flex flex-col">
+      <div className="p-6 h-[500px] overflow-y-auto bg-gray-50 flex flex-col">
         <div className="flex-1 space-y-6">
           {messages.map((message) => (
             <div
@@ -203,7 +203,7 @@ export const ChatInterface = () => {
         </div>
       </div>
       
-      <div className="p-4 bg-gray-50 border-t border-gray-200 space-y-4">
+      <div className="p-6 bg-white border-t border-gray-200 space-y-4">
         {messages.length === 1 && (
           <div>
             <h3 className="text-sm font-medium text-gray-900 mb-3">Try asking about:</h3>
@@ -240,7 +240,7 @@ export const ChatInterface = () => {
           <Button 
             onClick={handleSendMessage} 
             disabled={!inputValue.trim()}
-            className="bg-beatriz hover:bg-beatriz-dark"
+            className="bg-blue-600 hover:bg-blue-700"
           >
             <Send className="h-5 w-5" />
           </Button>

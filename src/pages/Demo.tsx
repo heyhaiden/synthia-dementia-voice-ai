@@ -7,8 +7,8 @@ const Demo = () => {
     <div className="h-screen flex flex-col bg-white overflow-hidden">
       <HeroSection onStartDemo={() => {}} showDemo={true} />
       
-      <main className="flex-1 container mx-auto px-4 overflow-hidden">
-        <div className="w-full max-w-4xl mx-auto h-full">
+      <main className="flex-1 container mx-auto px-4 py-4 overflow-hidden">
+        <div className="w-full max-w-4xl mx-auto h-full flex items-center justify-center">
           <ChatInterface />
         </div>
       </main>
