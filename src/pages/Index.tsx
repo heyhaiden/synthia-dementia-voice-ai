@@ -1,15 +1,11 @@
 
-import { useState, useRef, useEffect } from "react";
-import { Mic, Volume2, User, Send } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
+import { useState } from "react";
 import { ChatInterface } from "@/components/ChatInterface";
 import { Features } from "@/components/Features";
 import { HeroSection } from "@/components/HeroSection";
+import { toast } from "sonner";
 
 const Index = () => {
-  const [isListening, setIsListening] = useState(false);
   const [showDemo, setShowDemo] = useState(false);
   
   const handleStartDemo = () => {
@@ -18,27 +14,26 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Hero Section with Logo and CTA */}
+    <div className="min-h-screen flex flex-col bg-white">
       <HeroSection onStartDemo={handleStartDemo} showDemo={showDemo} />
       
-      {/* Main Content */}
-      <main className="flex-1 container px-4 py-8 md:py-12 mx-auto">
+      <main className="flex-1">
         {showDemo ? (
-          <ChatInterface />
+          <div className="container mx-auto px-4 py-12">
+            <ChatInterface />
+          </div>
         ) : (
           <Features />
         )}
       </main>
       
-      {/* Footer */}
-      <footer className="bg-beatriz-dark text-white py-6">
+      <footer className="border-t border-gray-100 py-8 bg-white">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-sm">© 2025 VoiceSpark AI. All rights reserved.</p>
-          <div className="mt-2 flex justify-center space-x-4">
-            <a href="#" className="text-beatriz-accent hover:underline text-xs">Privacy Policy</a>
-            <a href="#" className="text-beatriz-accent hover:underline text-xs">Terms of Service</a>
-            <a href="#" className="text-beatriz-accent hover:underline text-xs">Contact Us</a>
+          <p className="text-sm text-gray-500">© 2025 VoiceSpark AI. All rights reserved.</p>
+          <div className="mt-2 flex justify-center space-x-6">
+            <a href="#" className="text-gray-500 hover:text-gray-900 text-sm">Privacy Policy</a>
+            <a href="#" className="text-gray-500 hover:text-gray-900 text-sm">Terms of Service</a>
+            <a href="#" className="text-gray-500 hover:text-gray-900 text-sm">Contact Us</a>
           </div>
         </div>
       </footer>
