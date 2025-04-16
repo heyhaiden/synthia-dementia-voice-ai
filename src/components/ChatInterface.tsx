@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Message, MessageType } from "@/types/chat";
 
-// Demo conversation data
 const INITIAL_MESSAGES: Message[] = [
   {
     id: "1",
@@ -15,7 +14,6 @@ const INITIAL_MESSAGES: Message[] = [
   }
 ];
 
-// Mock responses for demo purposes
 const DEMO_RESPONSES: { [key: string]: string } = {
   "sundown": "Sundowning can be challenging. Try maintaining a consistent daily routine, increasing lighting before sunset, and reducing noise and stimulation in the evening. Playing calming music and creating a comfortable environment can also help reduce agitation.",
   "communication": "When communicating with someone with dementia, speak clearly and slowly, use simple sentences, maintain eye contact, and minimize distractions. Be patient and give them time to process information and respond.",
@@ -23,6 +21,13 @@ const DEMO_RESPONSES: { [key: string]: string } = {
   "caregiver": "Self-care is crucial for caregivers. Try to schedule regular breaks, join a support group, ask for help from family and friends, and consider respite care options. Remember that taking care of yourself improves your ability to care for your loved one.",
   "default": "I understand caring for someone with dementia can be challenging. Could you provide more details about your specific concern so I can offer more tailored guidance?"
 };
+
+const EXAMPLE_PROMPTS = [
+  "How can I help someone with sundowning symptoms?",
+  "What are good activities for dementia patients?",
+  "How do I communicate better with someone who has dementia?",
+  "What are some self-care tips for caregivers?"
+];
 
 export const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
@@ -33,16 +38,13 @@ export const ChatInterface = () => {
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  // Scroll to bottom of messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
   
-  // Handle sending a message
   const handleSendMessage = () => {
     if (!inputValue.trim()) return;
     
-    // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
       type: MessageType.USER,
@@ -54,7 +56,6 @@ export const ChatInterface = () => {
     setInputValue("");
     setIsTyping(true);
     
-    // Simulate response delay
     setTimeout(() => {
       const response = generateDemoResponse(inputValue);
       const assistantMessage: Message = {
@@ -70,7 +71,6 @@ export const ChatInterface = () => {
     }, 1500);
   };
   
-  // Generate demo response based on keywords
   const generateDemoResponse = (input: string): string => {
     const lowerInput = input.toLowerCase();
     
@@ -87,32 +87,26 @@ export const ChatInterface = () => {
     }
   };
   
-  // Simulate voice recognition
   const handleStartListening = () => {
     setIsListening(true);
     toast.info("Listening...");
     
-    // Simulate microphone operation
     setTimeout(() => {
       setIsListening(false);
       toast.success("Voice captured!");
       
-      // Simulate a voice message about sundowning
       setInputValue("How can I help my mom with sundowning?");
       
-      // Auto-send after a brief delay
       setTimeout(() => {
         handleSendMessage();
       }, 500);
     }, 2000);
   };
   
-  // Simulate voice playback
   const simulateVoicePlayback = (text: string) => {
     setIsPlaying(true);
     toast.info("Playing voice response...");
     
-    // Simulate audio duration based on text length
     const duration = Math.min(Math.max(text.length * 50, 2000), 8000);
     
     setTimeout(() => {
@@ -122,7 +116,6 @@ export const ChatInterface = () => {
   
   return (
     <div className="max-w-4xl mx-auto bg-beatriz-light rounded-2xl overflow-hidden shadow-xl border border-beatriz/20">
-      {/* Chat Header */}
       <div className="bg-beatriz p-4 text-white flex items-center justify-between">
         <div className="flex items-center">
           <div className="h-10 w-10 rounded-full bg-white p-0.5 mr-3">
@@ -137,22 +130,46 @@ export const ChatInterface = () => {
             <p className="text-xs opacity-80">Virtual Caregiver Assistant</p>
           </div>
         </div>
-        <div className="relative">
-          {isPlaying ? (
-            <div className="flex items-center space-x-1">
-              <div className="h-5 w-1 bg-white animate-pulse rounded-full"></div>
-              <div className="h-7 w-1 bg-white animate-pulse rounded-full"></div>
-              <div className="h-5 w-1 bg-white animate-pulse rounded-full"></div>
-              <div className="h-3 w-1 bg-white animate-pulse rounded-full"></div>
-            </div>
-          ) : (
-            <Volume2 className="text-white/80" />
-          )}
-        </div>
+        {isPlaying ? (
+          <div className="flex items-center space-x-1">
+            <div className="h-5 w-1 bg-white animate-pulse rounded-full"></div>
+            <div className="h-7 w-1 bg-white animate-pulse rounded-full"></div>
+            <div className="h-5 w-1 bg-white animate-pulse rounded-full"></div>
+            <div className="h-3 w-1 bg-white animate-pulse rounded-full"></div>
+          </div>
+        ) : (
+          <div className="flex items-center bg-black/20 backdrop-blur-sm rounded-full px-4 py-2">
+            <span className="text-white mr-3 text-sm font-medium">Voice Active</span>
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
+            </span>
+          </div>
+        )}
       </div>
       
-      {/* Chat Messages */}
       <div className="p-4 h-[500px] overflow-y-auto bg-white">
+        {messages.length === 1 && (
+          <div className="mb-8">
+            <h3 className="text-sm font-medium text-gray-900 mb-3">Try asking about:</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {EXAMPLE_PROMPTS.map((prompt, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  className="text-left h-auto py-2 px-3 text-sm"
+                  onClick={() => {
+                    setInputValue(prompt);
+                    handleSendMessage();
+                  }}
+                >
+                  {prompt}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
+        
         <div className="space-y-6">
           {messages.map((message) => (
             <div
@@ -207,7 +224,6 @@ export const ChatInterface = () => {
         </div>
       </div>
       
-      {/* Chat Input */}
       <div className="p-4 bg-gray-50 border-t border-gray-200">
         <div className="flex items-center space-x-2">
           <Input
