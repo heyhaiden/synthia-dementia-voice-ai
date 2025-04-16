@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -21,32 +22,34 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
   };
 
   return (
-    <header className="relative bg-white mt-16">
-      <div className="absolute inset-0 bg-gradient-to-b from-white to-transparent" />
-      <div className="relative container mx-auto px-4 py-8">
+    <header className="relative bg-white border-b border-gray-100">
+      <div className="relative container mx-auto px-4 py-4">
         <div className="flex flex-col items-center justify-center">
           {showDemo ? (
-            <div className="w-full flex items-center justify-between">
+            <div className="w-full flex items-center">
               <Button 
-                variant="outline" 
+                variant="ghost" 
                 onClick={handleDemoClick}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
               >
-                {showDemo ? (
-                  <>
-                    <ArrowLeft className="h-4 w-4" />
-                    Back to Home
-                  </>
-                ) : (
-                  "Try Beatriz"
-                )}
+                <ArrowLeft className="h-4 w-4" />
+                Back to Home
               </Button>
-              <h1 className="text-2xl font-semibold text-gray-900">
-                Chat with Beatriz
-              </h1>
-              <Button variant="outline">
-                Contact Support
-              </Button>
+              <div className="flex-1 flex justify-center">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-full bg-black p-0.5">
+                    <img 
+                      src="/lovable-uploads/193f56c2-01c0-492f-a435-4eb3950c0277.png" 
+                      alt="Beatriz Avatar" 
+                      className="h-full w-full object-cover rounded-full"
+                    />
+                  </div>
+                  <h1 className="text-xl font-semibold text-gray-900">
+                    Chat with Beatriz
+                  </h1>
+                </div>
+              </div>
+              <div className="w-[100px]" /> {/* Spacer to balance the back button */}
             </div>
           ) : (
             <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-6xl gap-16">
@@ -101,3 +104,4 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
     </header>
   );
 };
+

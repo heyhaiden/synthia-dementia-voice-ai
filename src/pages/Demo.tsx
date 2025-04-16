@@ -7,18 +7,15 @@ const Demo = () => {
     <div className="min-h-screen flex flex-col bg-white">
       <HeroSection onStartDemo={() => {}} showDemo={true} />
       
-      <main className="container mx-auto px-4 py-12">
-        <ChatInterface />
+      <main className="flex-1 container mx-auto px-4 py-6 flex items-center justify-center overflow-hidden">
+        <div className="w-full max-w-4xl">
+          <ChatInterface />
+        </div>
       </main>
       
-      <footer className="border-t border-gray-100 py-8 bg-white">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-sm text-gray-500">© 2025 VoiceSpark AI. All rights reserved.</p>
-          <div className="mt-2 flex justify-center space-x-6">
-            <a href="#" className="text-gray-500 hover:text-gray-900 text-sm">Privacy Policy</a>
-            <a href="#" className="text-gray-500 hover:text-gray-900 text-sm">Terms of Service</a>
-            <a href="#" className="text-gray-500 hover:text-gray-900 text-sm">Contact Us</a>
-          </div>
+      <footer className="border-t border-gray-100 py-4 bg-white">
+        <div className="container mx-auto px-4 text-center text-sm text-gray-500">
+          <p>© 2025 VoiceSpark AI. All rights reserved.</p>
         </div>
       </footer>
     </div>
@@ -26,3 +23,4 @@ const Demo = () => {
 };
 
 export default Demo;
+
