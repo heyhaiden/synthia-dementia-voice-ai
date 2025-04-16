@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 
 interface HeroSectionProps {
@@ -16,7 +15,7 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
             <div className="mb-8 inline-flex items-center gap-3 px-4 py-2 rounded-full bg-black/5">
               <div className="h-8 w-8 rounded-full bg-black p-0.5">
                 <img 
-                  src="/lovable-uploads/5b3a563c-5a26-45e4-b15b-7dec2aca195e.png" 
+                  src="/lovable-uploads/193f56c2-01c0-492f-a435-4eb3950c0277.png" 
                   alt="Beatriz Avatar" 
                   className="h-full w-full object-cover rounded-full"
                 />

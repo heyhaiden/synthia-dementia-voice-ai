@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Mic, Volume2, User, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -128,7 +127,7 @@ export const ChatInterface = () => {
         <div className="flex items-center">
           <div className="h-10 w-10 rounded-full bg-white p-0.5 mr-3">
             <img 
-              src="/lovable-uploads/5b3a563c-5a26-45e4-b15b-7dec2aca195e.png" 
+              src="/lovable-uploads/193f56c2-01c0-492f-a435-4eb3950c0277.png" 
               alt="Beatriz Avatar" 
               className="h-full w-full object-cover rounded-full"
             />
@@ -163,7 +162,7 @@ export const ChatInterface = () => {
               {message.type === MessageType.ASSISTANT && (
                 <div className="h-8 w-8 rounded-full bg-white p-0.5 mr-2 flex-shrink-0 shadow-sm border border-gray-200">
                   <img 
-                    src="/lovable-uploads/5b3a563c-5a26-45e4-b15b-7dec2aca195e.png" 
+                    src="/lovable-uploads/193f56c2-01c0-492f-a435-4eb3950c0277.png" 
                     alt="Beatriz Avatar" 
                     className="h-full w-full object-cover rounded-full"
                   />
@@ -190,7 +189,7 @@ export const ChatInterface = () => {
             <div className="flex justify-start">
               <div className="h-8 w-8 rounded-full bg-white p-0.5 mr-2 flex-shrink-0 shadow-sm border border-gray-200">
                 <img 
-                  src="/lovable-uploads/5b3a563c-5a26-45e4-b15b-7dec2aca195e.png" 
+                  src="/lovable-uploads/193f56c2-01c0-492f-a435-4eb3950c0277.png" 
                   alt="Beatriz Avatar"
                   className="h-full w-full object-cover rounded-full"
                 />
