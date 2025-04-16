@@ -15,7 +15,6 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
   const handleDemoClick = () => {
     if (location.pathname === "/") {
       navigate("/demo");
-      onStartDemo();
     } else {
       navigate("/");
     }
@@ -74,7 +73,7 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                   <Button 
-                    onClick={onStartDemo} 
+                    onClick={handleDemoClick} 
                     size="lg"
                     className="bg-gray-900 hover:bg-gray-800 text-white text-lg px-8 h-14 rounded-full"
                   >
@@ -104,4 +103,3 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
     </header>
   );
 };
-

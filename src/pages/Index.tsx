@@ -1,15 +1,16 @@
 
 import { useState } from "react";
-import { ChatInterface } from "@/components/ChatInterface";
+import { useNavigate } from "react-router-dom";
 import { Features } from "@/components/Features";
 import { HeroSection } from "@/components/HeroSection";
 import { toast } from "sonner";
 
 const Index = () => {
-  const [showDemo, setShowDemo] = useState(false);
+  const [showDemo] = useState(false);
+  const navigate = useNavigate();
   
   const handleStartDemo = () => {
-    setShowDemo(true);
+    navigate("/demo");
     toast.success("Demo mode activated. Try speaking to Beatriz!");
   };
 
@@ -18,13 +19,7 @@ const Index = () => {
       <HeroSection onStartDemo={handleStartDemo} showDemo={showDemo} />
       
       <main className="flex-1">
-        {showDemo ? (
-          <div className="container mx-auto px-4 py-12">
-            <ChatInterface />
-          </div>
-        ) : (
-          <Features />
-        )}
+        <Features />
       </main>
       
       <footer className="border-t border-gray-100 py-8 bg-white">
