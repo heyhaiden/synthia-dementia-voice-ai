@@ -11,7 +11,7 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
     <header className="relative bg-white mt-16">
       <div className="absolute inset-0 bg-gradient-to-b from-white to-transparent" />
       <div className="relative container mx-auto px-4 py-8">
-        <div className="flex flex-col items-center justify-between gap-8">
+        <div className="flex flex-col items-center justify-center">
           {showDemo ? (
             <div className="w-full flex items-center justify-between">
               <Button 
@@ -30,7 +30,7 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
               </Button>
             </div>
           ) : (
-            <div className="flex flex-col md:flex-row items-center justify-between w-full gap-16">
+            <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-6xl gap-16">
               <div className="flex-1 text-center md:text-left max-w-2xl mx-auto md:mx-0">
                 <div className="mb-8 inline-flex items-center gap-3 px-4 py-2 rounded-full bg-black/5">
                   <div className="h-8 w-8 rounded-full bg-black p-0.5">
@@ -46,7 +46,7 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
                 <h1 className="text-5xl md:text-7xl font-semibold text-gray-900 tracking-tight mb-6 leading-[1.1]">
                   The future of healthcare assistance
                 </h1>
-                <p className="text-xl md:text-2xl text-gray-500 mb-10 leading-relaxed max-w-xl">
+                <p className="text-xl md:text-2xl text-gray-500 mb-10 leading-relaxed max-w-xl mx-auto md:mx-0">
                   Experience personalized caregiver support through natural voice conversations 
                   with our AI-powered assistant.
                 </p>
@@ -68,7 +68,7 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
                 </div>
               </div>
               
-              <div className="hidden md:block flex-1">
+              <div className="hidden md:block flex-1 flex items-center justify-center">
                 <img 
                   src="https://images.unsplash.com/photo-1581092795360-fd1ca04f0952" 
                   alt="Healthcare technology" 
