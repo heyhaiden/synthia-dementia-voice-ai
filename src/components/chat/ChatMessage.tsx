@@ -1,0 +1,37 @@
+
+import { User } from "lucide-react";
+import { Message, MessageType } from "@/types/chat";
+
+interface ChatMessageProps {
+  message: Message;
+}
+
+export const ChatMessage = ({ message }: ChatMessageProps) => {
+  return (
+    <div className={`flex ${message.type === MessageType.USER ? "justify-end" : "justify-start"}`}>
+      {message.type === MessageType.ASSISTANT && (
+        <div className="h-8 w-8 rounded-full bg-white p-0.5 mr-2 flex-shrink-0 shadow-sm border border-gray-200">
+          <img 
+            src="/lovable-uploads/193f56c2-01c0-492f-a435-4eb3950c0277.png" 
+            alt="Beatriz Avatar" 
+            className="h-full w-full object-cover rounded-full"
+          />
+        </div>
+      )}
+      
+      <div className={`max-w-[80%] px-4 py-3 rounded-2xl ${
+        message.type === MessageType.USER 
+          ? "bg-blue-500 text-white" 
+          : "bg-gray-100 text-gray-800"
+      }`}>
+        <p>{message.content}</p>
+      </div>
+      
+      {message.type === MessageType.USER && (
+        <div className="h-8 w-8 rounded-full bg-blue-500 ml-2 flex-shrink-0 flex items-center justify-center shadow-sm">
+          <User className="h-4 w-4 text-white" />
+        </div>
+      )}
+    </div>
+  );
+};
