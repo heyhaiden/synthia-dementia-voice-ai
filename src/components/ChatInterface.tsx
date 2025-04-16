@@ -148,9 +148,64 @@ export const ChatInterface = () => {
         )}
       </div>
       
-      <div className="p-4 h-[500px] overflow-y-auto bg-white">
+      <div className="p-4 h-[500px] overflow-y-auto bg-white flex flex-col">
+        <div className="flex-1 space-y-6">
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex ${message.type === MessageType.USER ? "justify-end" : "justify-start"}`}
+            >
+              {message.type === MessageType.ASSISTANT && (
+                <div className="h-8 w-8 rounded-full bg-white p-0.5 mr-2 flex-shrink-0 shadow-sm border border-gray-200">
+                  <img 
+                    src="/lovable-uploads/193f56c2-01c0-492f-a435-4eb3950c0277.png" 
+                    alt="Beatriz Avatar" 
+                    className="h-full w-full object-cover rounded-full"
+                  />
+                </div>
+              )}
+              
+              <div className={`max-w-[80%] px-4 py-3 rounded-2xl ${
+                message.type === MessageType.USER 
+                  ? "bg-blue-500 text-white" 
+                  : "bg-gray-100 text-gray-800"
+              }`}>
+                <p>{message.content}</p>
+              </div>
+              
+              {message.type === MessageType.USER && (
+                <div className="h-8 w-8 rounded-full bg-blue-500 ml-2 flex-shrink-0 flex items-center justify-center shadow-sm">
+                  <User className="h-4 w-4 text-white" />
+                </div>
+              )}
+            </div>
+          ))}
+          
+          {isTyping && (
+            <div className="flex justify-start">
+              <div className="h-8 w-8 rounded-full bg-white p-0.5 mr-2 flex-shrink-0 shadow-sm border border-gray-200">
+                <img 
+                  src="/lovable-uploads/193f56c2-01c0-492f-a435-4eb3950c0277.png" 
+                  alt="Beatriz Avatar"
+                  className="h-full w-full object-cover rounded-full"
+                />
+              </div>
+              <div className="bg-gray-100 px-4 py-3 rounded-2xl">
+                <div className="typing-indicator">
+                  <span className="animate-wave-1"></span>
+                  <span className="animate-wave-2"></span>
+                  <span className="animate-wave-3"></span>
+                </div>
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+      </div>
+      
+      <div className="p-4 bg-gray-50 border-t border-gray-200 space-y-4">
         {messages.length === 1 && (
-          <div className="mb-8">
+          <div>
             <h3 className="text-sm font-medium text-gray-900 mb-3">Try asking about:</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {EXAMPLE_PROMPTS.map((prompt, index) => (
@@ -170,61 +225,6 @@ export const ChatInterface = () => {
           </div>
         )}
         
-        <div className="space-y-6">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.type === MessageType.USER ? "justify-end" : "justify-start"}`}
-            >
-              {message.type === MessageType.ASSISTANT && (
-                <div className="h-8 w-8 rounded-full bg-white p-0.5 mr-2 flex-shrink-0 shadow-sm border border-gray-200">
-                  <img 
-                    src="/lovable-uploads/193f56c2-01c0-492f-a435-4eb3950c0277.png" 
-                    alt="Beatriz Avatar" 
-                    className="h-full w-full object-cover rounded-full"
-                  />
-                </div>
-              )}
-              
-              <div className={`max-w-[80%] animate-fade-in ${
-                message.type === MessageType.USER 
-                  ? "chat-bubble chat-bubble-user" 
-                  : "chat-bubble chat-bubble-assistant"
-              }`}>
-                <p>{message.content}</p>
-              </div>
-              
-              {message.type === MessageType.USER && (
-                <div className="h-8 w-8 rounded-full bg-beatriz ml-2 flex-shrink-0 flex items-center justify-center shadow-sm">
-                  <User className="h-4 w-4 text-white" />
-                </div>
-              )}
-            </div>
-          ))}
-          
-          {isTyping && (
-            <div className="flex justify-start">
-              <div className="h-8 w-8 rounded-full bg-white p-0.5 mr-2 flex-shrink-0 shadow-sm border border-gray-200">
-                <img 
-                  src="/lovable-uploads/193f56c2-01c0-492f-a435-4eb3950c0277.png" 
-                  alt="Beatriz Avatar"
-                  className="h-full w-full object-cover rounded-full"
-                />
-              </div>
-              <div className="chat-bubble chat-bubble-assistant animate-fade-in">
-                <div className="typing-indicator">
-                  <span className="animate-wave-1"></span>
-                  <span className="animate-wave-2"></span>
-                  <span className="animate-wave-3"></span>
-                </div>
-              </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-      </div>
-      
-      <div className="p-4 bg-gray-50 border-t border-gray-200">
         <div className="flex items-center space-x-2">
           <Input
             value={inputValue}
