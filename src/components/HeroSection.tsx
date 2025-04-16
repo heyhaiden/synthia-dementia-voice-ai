@@ -8,8 +8,8 @@ interface HeroSectionProps {
 
 export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
   return (
-    <header className="relative bg-white mt-16"> {/* Added top margin */}
-      <div className="absolute inset-0 bg-gradient-to-b from-gray-50 to-transparent" />
+    <header className="relative bg-white mt-16">
+      <div className="absolute inset-0 bg-gradient-to-b from-white to-transparent" />
       <div className="relative container mx-auto px-4 py-8">
         <div className="flex flex-col items-center justify-between gap-8">
           {showDemo ? (
@@ -68,12 +68,11 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
                 </div>
               </div>
               
-              {/* New placeholder image section */}
               <div className="hidden md:block flex-1">
                 <img 
-                  src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81" 
+                  src="https://images.unsplash.com/photo-1581092795360-fd1ca04f0952" 
                   alt="Healthcare technology" 
-                  className="w-full max-w-md h-auto object-cover rounded-lg shadow-lg"
+                  className="w-full max-w-md h-[600px] object-cover rounded-lg shadow-lg"
                 />
               </div>
             </div>
