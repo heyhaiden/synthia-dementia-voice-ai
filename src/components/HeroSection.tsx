@@ -1,7 +1,5 @@
-
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import Image from "@/components/ui/image"; // We'll create this component
 
 interface HeroSectionProps {
   onStartDemo: () => void;
