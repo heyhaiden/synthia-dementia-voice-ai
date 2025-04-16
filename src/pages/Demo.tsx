@@ -4,11 +4,11 @@ import { HeroSection } from "@/components/HeroSection";
 
 const Demo = () => {
   return (
-    <div className="h-screen flex flex-col bg-white overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-white">
       <HeroSection onStartDemo={() => {}} showDemo={true} />
       
-      <main className="flex-1 container mx-auto px-4 py-4 overflow-hidden">
-        <div className="w-full max-w-4xl mx-auto h-full flex items-center justify-center">
+      <main className="flex-1 container mx-auto px-4 py-8">
+        <div className="w-full max-w-4xl mx-auto">
           <ChatInterface />
         </div>
       </main>

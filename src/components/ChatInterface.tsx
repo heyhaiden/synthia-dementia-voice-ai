@@ -115,7 +115,7 @@ export const ChatInterface = () => {
   };
   
   return (
-    <div className="max-w-4xl mx-auto bg-white rounded-2xl overflow-hidden shadow-xl border border-gray-200">
+    <div className="w-full bg-white rounded-2xl overflow-hidden shadow-xl border border-gray-200">
       <div className="bg-blue-600 p-4 text-white flex items-center justify-between">
         <div className="flex items-center">
           <div className="h-10 w-10 rounded-full bg-white p-0.5 mr-3">
@@ -148,7 +148,7 @@ export const ChatInterface = () => {
         )}
       </div>
       
-      <div className="p-6 h-[500px] overflow-y-auto bg-gray-50 flex flex-col">
+      <div className="p-6 h-[600px] overflow-y-auto bg-gray-50 flex flex-col">
         <div className="flex-1 space-y-6">
           {messages.map((message) => (
             <div
@@ -203,28 +203,7 @@ export const ChatInterface = () => {
         </div>
       </div>
       
-      <div className="p-6 bg-white border-t border-gray-200 space-y-4">
-        {messages.length === 1 && (
-          <div>
-            <h3 className="text-sm font-medium text-gray-900 mb-3">Try asking about:</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {EXAMPLE_PROMPTS.map((prompt, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  className="text-left h-auto py-2 px-3 text-sm"
-                  onClick={() => {
-                    setInputValue(prompt);
-                    handleSendMessage();
-                  }}
-                >
-                  {prompt}
-                </Button>
-              ))}
-            </div>
-          </div>
-        )}
-        
+      <div className="p-6 bg-white border-t border-gray-200">
         <div className="flex items-center space-x-2">
           <Input
             value={inputValue}
@@ -251,10 +230,6 @@ export const ChatInterface = () => {
           >
             <Mic className="h-5 w-5" />
           </Button>
-        </div>
-        
-        <div className="mt-3 text-xs text-center text-gray-500">
-          <p>This is a demonstration. In a real implementation, Beatriz would use advanced speech recognition and AI language models.</p>
         </div>
       </div>
     </div>
