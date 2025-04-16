@@ -4,11 +4,11 @@ import { HeroSection } from "@/components/HeroSection";
 
 const Demo = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="h-screen flex flex-col bg-white overflow-hidden">
       <HeroSection onStartDemo={() => {}} showDemo={true} />
       
-      <main className="flex-1 container mx-auto px-4 py-6 flex items-center justify-center overflow-hidden">
-        <div className="w-full max-w-4xl">
+      <main className="flex-1 container mx-auto px-4 overflow-hidden">
+        <div className="w-full max-w-4xl mx-auto h-full">
           <ChatInterface />
         </div>
       </main>
@@ -23,4 +23,3 @@ const Demo = () => {
 };
 
 export default Demo;
-

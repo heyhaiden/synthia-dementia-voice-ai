@@ -51,7 +51,7 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
               <div className="w-[100px]" /> {/* Spacer to balance the back button */}
             </div>
           ) : (
-            <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-6xl gap-16">
+            <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-6xl gap-16 py-16">
               <div className="flex-1 text-center md:text-left max-w-2xl mx-auto md:mx-0">
                 <div className="mb-8 inline-flex items-center gap-3 px-4 py-2 rounded-full bg-black/5">
                   <div className="h-8 w-8 rounded-full bg-black p-0.5">
