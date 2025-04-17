@@ -25,8 +25,8 @@ export default defineConfig(({ mode }) => ({
     esbuildOptions: {
       // Set target to a value that's compatible with your Node.js version
       target: 'es2020',
-      // Ignore TypeScript configuration errors
-      tsconfigRaw: {
+      // Use a string for tsconfigRaw to avoid type errors
+      tsconfigRaw: JSON.stringify({
         compilerOptions: {
           // Override problematic settings
           composite: false,
@@ -34,7 +34,7 @@ export default defineConfig(({ mode }) => ({
           // Make sure noEmit is false
           noEmit: false
         }
-      }
+      })
     }
   }
 }));
