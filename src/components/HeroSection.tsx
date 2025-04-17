@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -21,11 +20,11 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
   };
 
   return (
-    <header className="relative bg-white border-b border-gray-100">
+    <header className="relative bg-white">
       <div className="relative container mx-auto px-4 py-4">
-        <div className="flex flex-col items-center justify-center">
+        <div className={`flex flex-col items-center justify-center ${!showDemo ? 'min-h-[80vh] pt-24' : ''}`}>
           {showDemo ? (
-            <div className="w-full flex items-center">
+            <div className="w-full flex items-center justify-center py-4">
               <Button 
                 variant="ghost" 
                 onClick={handleDemoClick}
@@ -51,7 +50,7 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
               <div className="w-[100px]" /> {/* Spacer to balance the back button */}
             </div>
           ) : (
-            <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-6xl gap-16 py-16">
+            <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-6xl gap-16">
               <div className="flex-1 text-center md:text-left max-w-2xl mx-auto md:mx-0">
                 <div className="mb-8 inline-flex items-center gap-3 px-4 py-2 rounded-full bg-black/5">
                   <div className="h-8 w-8 rounded-full bg-black p-0.5">
@@ -64,10 +63,10 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
                   <p className="text-sm font-medium text-gray-600">Introducing Beatriz</p>
                 </div>
                 
-                <h1 className="text-5xl md:text-7xl font-semibold text-gray-900 tracking-tight mb-6 leading-[1.1]">
+                <h1 className="text-5xl md:text-7xl font-semibold text-gray-900 tracking-tight mb-6 leading-[1.1] text-center md:text-left">
                   The future of healthcare training
                 </h1>
-                <p className="text-xl md:text-2xl text-gray-500 mb-10 leading-relaxed max-w-xl mx-auto md:mx-0">
+                <p className="text-xl md:text-2xl text-gray-500 mb-10 leading-relaxed max-w-xl mx-auto md:mx-0 text-center md:text-left">
                   Experience personalized caregiver support through natural voice conversations 
                   with our conversational AI assistant.
                 </p>

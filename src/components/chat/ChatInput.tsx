@@ -1,7 +1,7 @@
-
-import { Mic, Send } from "lucide-react";
+import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Microphone } from "@/components/Microphone";
 
 interface ChatInputProps {
   inputValue: string;
@@ -20,6 +20,10 @@ export const ChatInput = ({
   isListening,
   isDisabled = false
 }: ChatInputProps) => {
+  const handleTranscriptionComplete = (text: string) => {
+    onInputChange(text);
+  };
+
   return (
     <div className="p-6 bg-white border-t border-gray-200">
       <div className="flex items-center space-x-2">
@@ -42,14 +46,10 @@ export const ChatInput = ({
         >
           <Send className="h-5 w-5" />
         </Button>
-        <Button
-          variant={isListening ? "destructive" : "outline"}
-          onClick={onStartListening}
-          disabled={isDisabled}
-          className={isListening ? "animate-pulse" : ""}
-        >
-          <Mic className="h-5 w-5" />
-        </Button>
+        <Microphone
+          onTranscriptionComplete={handleTranscriptionComplete}
+          isDisabled={isDisabled}
+        />
       </div>
       {isDisabled && (
         <p className="mt-2 text-xs text-gray-500 text-center">
