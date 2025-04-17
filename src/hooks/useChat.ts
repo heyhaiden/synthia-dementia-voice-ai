@@ -164,7 +164,7 @@ export const useChat = () => {
       
       // Convert text to speech
       const audioUrl = await textToSpeech(text, {
-        voiceId: "21m00Tcm4TlvDq8ikWAM", // Default voice ID
+        voiceId: import.meta.env.VITE_ELEVENLABS_VOICE_ID, // Use environment variable
       });
       
       // Play audio if a valid URL is returned

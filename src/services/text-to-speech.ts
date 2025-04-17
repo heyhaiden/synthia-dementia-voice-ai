@@ -1,4 +1,3 @@
-
 /**
  * Text-to-speech service using ElevenLabs API
  */
@@ -19,7 +18,7 @@ interface ElevenLabsOptions {
 export const textToSpeech = async (
   text: string, 
   options: ElevenLabsOptions = {
-    voiceId: "21m00Tcm4TlvDq8ikWAM", // Default voice
+    voiceId: import.meta.env.VITE_ELEVENLABS_VOICE_ID || "21m00Tcm4TlvDq8ikWAM", // Use env variable or default
     model: "eleven_monolingual_v1",
     stability: 0.5,
     similarityBoost: 0.75
