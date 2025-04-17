@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { toast } from "sonner";
+// import { toast } from "sonner";  // Commented out to prevent toasts
 import { Message, MessageType } from "@/types/chat";
 import { speechToText, processMessage, textToSpeech } from "@/services/ai-services";
 
@@ -68,24 +68,28 @@ export const useChat = () => {
       if (newUserMessageCount >= MAX_USER_MESSAGES) {
         setTimeout(() => {
           setIsDemoEnded(true);
-          toast.info("This demo is limited to 5 messages. Thank you for trying the experience!");
+          // Commented out toast to disable popup
+          // toast.info("This demo is limited to 5 messages. Thank you for trying the experience!");
         }, 1000);
       }
     } catch (error) {
       setIsTyping(false);
-      toast.error("Failed to get a response. Please try again.");
+      // Commented out toast to disable popup
+      // toast.error("Failed to get a response. Please try again.");
       console.error("Error processing message:", error);
     }
   };
 
   const handleStartListening = async () => {
     if (isMessageLimitReached || isDemoEnded) {
-      toast.info("This demo is limited to 5 messages. Thank you for trying the experience!");
+      // Commented out toast to disable popup
+      // toast.info("This demo is limited to 5 messages. Thank you for trying the experience!");
       return;
     }
     
     setIsListening(true);
-    toast.info("Listening...");
+    // Commented out toast to disable popup
+    // toast.info("Listening...");
     
     try {
       // Request microphone access
@@ -107,11 +111,13 @@ export const useChat = () => {
         
         try {
           // Convert speech to text
-          toast.info("Processing your voice...");
+          // Commented out toast to disable popup
+          // toast.info("Processing your voice...");
           const text = await speechToText(audioBlob);
           
           if (text) {
-            toast.success("Voice captured!");
+            // Commented out toast to disable popup
+            // toast.success("Voice captured!");
             setInputValue(text);
             
             // Automatically send message after a short delay
@@ -119,10 +125,12 @@ export const useChat = () => {
               handleSendMessage();
             }, 500);
           } else {
-            toast.error("Could not recognize speech. Please try again.");
+            // Commented out toast to disable popup
+            // toast.error("Could not recognize speech. Please try again.");
           }
         } catch (error) {
-          toast.error("Failed to process audio. Please try again.");
+          // Commented out toast to disable popup
+          // toast.error("Failed to process audio. Please try again.");
           console.error("Speech-to-text error:", error);
         } finally {
           setIsListening(false);
@@ -142,7 +150,8 @@ export const useChat = () => {
       }, 5000);
     } catch (error) {
       setIsListening(false);
-      toast.error("Could not access microphone. Please check permissions.");
+      // Commented out toast to disable popup
+      // toast.error("Could not access microphone. Please check permissions.");
       console.error("Microphone access error:", error);
     }
   };
@@ -150,7 +159,8 @@ export const useChat = () => {
   const handleTextToSpeech = async (text: string) => {
     try {
       setIsPlaying(true);
-      toast.info("Generating voice response...");
+      // Commented out toast to disable popup
+      // toast.info("Generating voice response...");
       
       // Convert text to speech
       const audioUrl = await textToSpeech(text, {
@@ -169,26 +179,29 @@ export const useChat = () => {
         
         audio.onerror = () => {
           setIsPlaying(false);
-          toast.error("Failed to play audio response.");
+          // Commented out toast to disable popup
+          // toast.error("Failed to play audio response.");
           // Revoke the object URL to free up memory
           URL.revokeObjectURL(audioUrl);
         };
         
         await audio.play();
-        toast.success("Playing voice response...");
+        // Commented out toast to disable popup
+        // toast.success("Playing voice response...");
       } else {
         // For mock implementation, simulate playback
         simulateVoicePlayback(text);
       }
     } catch (error) {
       setIsPlaying(false);
-      toast.error("Failed to generate or play voice response.");
+      // Commented out toast to disable popup
+      // toast.error("Failed to generate or play voice response.");
       console.error("Text-to-speech error:", error);
     }
   };
 
   const simulateVoicePlayback = (text: string) => {
-    toast.info("Playing voice response...");
+    // toast.info("Playing voice response...");
     
     // Calculate a reasonable duration based on text length
     const duration = Math.min(Math.max(text.length * 50, 2000), 8000);
