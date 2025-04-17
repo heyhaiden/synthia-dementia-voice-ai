@@ -91,8 +91,8 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
               
               <div className="hidden md:block flex-1 flex items-center justify-center">
                 <img 
-                  src="https://images.unsplash.com/photo-1581092795360-fd1ca04f0952" 
-                  alt="Healthcare technology" 
+                  src="https://images.unsplash.com/photo-1498050108023-c5249f4df085" 
+                  alt="Healthcare AI Technology" 
                   className="w-full max-w-md h-[600px] object-cover rounded-lg shadow-lg"
                 />
               </div>
