@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { Message, MessageType } from "@/types/chat";
+import { speechToText, processMessage, textToSpeech } from "@/services/ai-services";
 
 const INITIAL_MESSAGES: Message[] = [
   {
@@ -12,14 +13,6 @@ const INITIAL_MESSAGES: Message[] = [
   }
 ];
 
-const DEMO_RESPONSES: { [key: string]: string } = {
-  "sundown": "Sundowning can be challenging. Try maintaining a consistent daily routine, increasing lighting before sunset, and reducing noise and stimulation in the evening. Playing calming music and creating a comfortable environment can also help reduce agitation.",
-  "communication": "When communicating with someone with dementia, speak clearly and slowly, use simple sentences, maintain eye contact, and minimize distractions. Be patient and give them time to process information and respond.",
-  "activities": "Engaging activities for people with dementia could include music therapy, gentle exercise, looking at family photos, simple arts and crafts, or sensory activities like gardening or baking. Focus on activities that connect with their past interests and abilities.",
-  "caregiver": "Self-care is crucial for caregivers. Try to schedule regular breaks, join a support group, ask for help from family and friends, and consider respite care options. Remember that taking care of yourself improves your ability to care for your loved one.",
-  "default": "I understand caring for someone with dementia can be challenging. Could you provide more details about your specific concern so I can offer more tailored guidance?"
-};
-
 export const useChat = () => {
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [inputValue, setInputValue] = useState("");
@@ -27,23 +20,7 @@ export const useChat = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const generateDemoResponse = (input: string): string => {
-    const lowerInput = input.toLowerCase();
-    
-    if (lowerInput.includes("sundown")) {
-      return DEMO_RESPONSES.sundown;
-    } else if (lowerInput.includes("talk") || lowerInput.includes("communicat")) {
-      return DEMO_RESPONSES.communication;
-    } else if (lowerInput.includes("activit") || lowerInput.includes("engage")) {
-      return DEMO_RESPONSES.activities;
-    } else if (lowerInput.includes("tired") || lowerInput.includes("stress") || lowerInput.includes("self") || lowerInput.includes("myself")) {
-      return DEMO_RESPONSES.caregiver;
-    } else {
-      return DEMO_RESPONSES.default;
-    }
-  };
-
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
     
     const userMessage: Message = {
@@ -57,41 +34,132 @@ export const useChat = () => {
     setInputValue("");
     setIsTyping(true);
     
-    setTimeout(() => {
-      const response = generateDemoResponse(inputValue);
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        type: MessageType.ASSISTANT,
-        content: response,
-        timestamp: new Date().toISOString(),
-      };
+    try {
+      // Send to language model to get response
+      const assistantMessage = await processMessage([...messages, userMessage]);
       
       setIsTyping(false);
       setMessages(prev => [...prev, assistantMessage]);
-      simulateVoicePlayback(response);
-    }, 1500);
+      
+      // Generate voice response if text-to-speech is available
+      if (assistantMessage.content) {
+        handleTextToSpeech(assistantMessage.content);
+      }
+    } catch (error) {
+      setIsTyping(false);
+      toast.error("Failed to get a response. Please try again.");
+      console.error("Error processing message:", error);
+    }
   };
 
-  const handleStartListening = () => {
+  const handleStartListening = async () => {
     setIsListening(true);
     toast.info("Listening...");
     
-    setTimeout(() => {
-      setIsListening(false);
-      toast.success("Voice captured!");
+    try {
+      // Request microphone access
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       
-      setInputValue("How can I help my mom with sundowning?");
+      // Create a MediaRecorder instance to record audio
+      const mediaRecorder = new MediaRecorder(stream);
+      const audioChunks: Blob[] = [];
       
+      // Listen for dataavailable event, which is triggered when we stop recording
+      mediaRecorder.addEventListener("dataavailable", (event) => {
+        audioChunks.push(event.data);
+      });
+      
+      // Listen for stop event, which is triggered when we stop recording
+      mediaRecorder.addEventListener("stop", async () => {
+        // Create audio blob from chunks
+        const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+        
+        try {
+          // Convert speech to text
+          toast.info("Processing your voice...");
+          const text = await speechToText(audioBlob);
+          
+          if (text) {
+            toast.success("Voice captured!");
+            setInputValue(text);
+            
+            // Automatically send message after a short delay
+            setTimeout(() => {
+              handleSendMessage();
+            }, 500);
+          } else {
+            toast.error("Could not recognize speech. Please try again.");
+          }
+        } catch (error) {
+          toast.error("Failed to process audio. Please try again.");
+          console.error("Speech-to-text error:", error);
+        } finally {
+          setIsListening(false);
+          // Stop all tracks to release the microphone
+          stream.getTracks().forEach(track => track.stop());
+        }
+      });
+      
+      // Start recording
+      mediaRecorder.start();
+      
+      // Stop recording after 5 seconds
       setTimeout(() => {
-        handleSendMessage();
-      }, 500);
-    }, 2000);
+        if (mediaRecorder.state !== "inactive") {
+          mediaRecorder.stop();
+        }
+      }, 5000);
+    } catch (error) {
+      setIsListening(false);
+      toast.error("Could not access microphone. Please check permissions.");
+      console.error("Microphone access error:", error);
+    }
+  };
+
+  const handleTextToSpeech = async (text: string) => {
+    try {
+      setIsPlaying(true);
+      toast.info("Generating voice response...");
+      
+      // Convert text to speech
+      const audioUrl = await textToSpeech(text, {
+        voiceId: "21m00Tcm4TlvDq8ikWAM", // Default voice ID
+      });
+      
+      // Play audio if a valid URL is returned
+      if (audioUrl && audioUrl !== "mock-audio-url.mp3") {
+        const audio = new Audio(audioUrl);
+        
+        audio.onended = () => {
+          setIsPlaying(false);
+          // Revoke the object URL to free up memory
+          URL.revokeObjectURL(audioUrl);
+        };
+        
+        audio.onerror = () => {
+          setIsPlaying(false);
+          toast.error("Failed to play audio response.");
+          // Revoke the object URL to free up memory
+          URL.revokeObjectURL(audioUrl);
+        };
+        
+        await audio.play();
+        toast.success("Playing voice response...");
+      } else {
+        // For mock implementation, simulate playback
+        simulateVoicePlayback(text);
+      }
+    } catch (error) {
+      setIsPlaying(false);
+      toast.error("Failed to generate or play voice response.");
+      console.error("Text-to-speech error:", error);
+    }
   };
 
   const simulateVoicePlayback = (text: string) => {
-    setIsPlaying(true);
     toast.info("Playing voice response...");
     
+    // Calculate a reasonable duration based on text length
     const duration = Math.min(Math.max(text.length * 50, 2000), 8000);
     
     setTimeout(() => {
