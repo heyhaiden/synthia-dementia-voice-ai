@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Mic, MicOff } from "lucide-react";
+import { Mic } from "lucide-react";
 import { startSpeechRecognition, stopSpeechRecognition } from "@/services/speech-to-text";
 
 // Add type definitions for Web Speech API
@@ -13,12 +13,16 @@ declare global {
 
 interface MicrophoneProps {
   onTranscription: (text: string) => void;
+  onRecordingStateChange?: (isRecording: boolean) => void;
   disabled?: boolean;
 }
 
-export const Microphone = ({ onTranscription, disabled = false }: MicrophoneProps) => {
+export const Microphone = ({ 
+  onTranscription, 
+  onRecordingStateChange,
+  disabled = false 
+}: MicrophoneProps) => {
   const [isRecording, setIsRecording] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const finalTranscriptRef = useRef<string>("");
 
@@ -31,6 +35,12 @@ export const Microphone = ({ onTranscription, disabled = false }: MicrophoneProp
     };
   }, []);
 
+  const updateRecordingState = (recording: boolean) => {
+    console.log("Updating recording state:", recording); // Debug log
+    setIsRecording(recording);
+    onRecordingStateChange?.(recording);
+  };
+
   const startRecording = async () => {
     try {
       // Reset transcripts
@@ -40,62 +50,52 @@ export const Microphone = ({ onTranscription, disabled = false }: MicrophoneProp
       const recognition = startSpeechRecognition(
         // Interim results callback
         (text) => {
-          // Update input with interim results
-          onTranscription(finalTranscriptRef.current + " " + text);
+          const currentText = (finalTranscriptRef.current + " " + text).trim();
+          onTranscription(currentText);
         },
         // Final results callback
         (text) => {
-          finalTranscriptRef.current += " " + text;
+          finalTranscriptRef.current = (finalTranscriptRef.current + " " + text).trim();
           onTranscription(finalTranscriptRef.current);
         },
         // Error callback
         (error) => {
           console.error("Speech recognition error:", error);
-          setIsRecording(false);
-          setIsProcessing(false);
+          updateRecordingState(false);
         }
       );
 
       if (recognition) {
         recognitionRef.current = recognition;
-        setIsRecording(true);
+        updateRecordingState(true);
 
         // Set up end handler
         recognition.onend = () => {
-          if (isRecording) {
-            const finalText = finalTranscriptRef.current.trim();
-            if (finalText) {
-              onTranscription(finalText);
-            }
-            setIsRecording(false);
-          }
+          updateRecordingState(false);
         };
       }
     } catch (error) {
       console.error("Error starting speech recognition:", error);
+      updateRecordingState(false);
     }
   };
 
   const stopRecording = () => {
     if (recognitionRef.current) {
-      setIsProcessing(true);
-      
-      // Get the final text
-      const finalText = finalTranscriptRef.current.trim();
-      
-      stopSpeechRecognition(recognitionRef.current);
-      recognitionRef.current = null;
-      
-      if (finalText) {
-        onTranscription(finalText);
+      // Ensure final transcript is sent
+      if (finalTranscriptRef.current.trim()) {
+        onTranscription(finalTranscriptRef.current.trim());
       }
       
-      setIsRecording(false);
-      setIsProcessing(false);
+      // Stop recognition and update state
+      stopSpeechRecognition(recognitionRef.current);
+      recognitionRef.current = null;
+      updateRecordingState(false);
     }
   };
 
   const toggleRecording = () => {
+    console.log("Toggle recording, current state:", isRecording); // Debug log
     if (isRecording) {
       stopRecording();
     } else {
@@ -104,29 +104,18 @@ export const Microphone = ({ onTranscription, disabled = false }: MicrophoneProp
   };
 
   return (
-    <div className="relative">
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={toggleRecording}
-        disabled={disabled || isProcessing}
-        className={`relative ${isRecording ? "bg-red-100 hover:bg-red-200" : ""}`}
-      >
-        {isRecording ? (
-          <>
-            <MicOff className="h-5 w-5" />
-            <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full animate-pulse" />
-          </>
-        ) : (
-          <Mic className="h-5 w-5" />
-        )}
-      </Button>
-      
-      {isProcessing && (
-        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-gray-500">
-          Processing...
-        </div>
-      )}
-    </div>
+    <Button
+      variant={isRecording ? "default" : "outline"}
+      size="icon"
+      onClick={toggleRecording}
+      disabled={disabled}
+      className={`relative transition-all duration-200 ${
+        isRecording 
+          ? "bg-blue-500 hover:bg-blue-600 text-white scale-110" 
+          : "hover:bg-blue-50 hover:text-blue-600"
+      }`}
+    >
+      <Mic className={`h-5 w-5 transition-transform duration-200 ${isRecording ? "scale-110" : ""}`} />
+    </Button>
   );
 }; 
