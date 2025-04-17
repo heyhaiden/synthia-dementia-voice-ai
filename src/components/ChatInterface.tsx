@@ -1,4 +1,3 @@
-
 import { useRef, useEffect } from "react";
 import { ChatHeader } from "./chat/ChatHeader";
 import { ChatMessage } from "./chat/ChatMessage";
@@ -9,14 +8,12 @@ export const ChatInterface = () => {
   const { 
     messages, 
     inputValue, 
-    isListening, 
     isTyping, 
     isPlaying,
     isMessageLimitReached,
     isDemoEnded,
     setInputValue,
-    handleSendMessage,
-    handleStartListening
+    handleSendMessage
   } = useChat();
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -31,8 +28,12 @@ export const ChatInterface = () => {
       
       <div className="p-6 h-[600px] overflow-y-auto bg-gray-50 flex flex-col">
         <div className="flex-1 space-y-6">
-          {messages.map((message) => (
-            <ChatMessage key={message.id} message={message} />
+          {messages.map((message, index) => (
+            <ChatMessage 
+              key={message.id} 
+              message={message}
+              isSpeaking={isPlaying && index === messages.length - 1 && message.type === "assistant"}
+            />
           ))}
           
           {isTyping && (
@@ -70,8 +71,6 @@ export const ChatInterface = () => {
         inputValue={inputValue}
         onInputChange={setInputValue}
         onSend={handleSendMessage}
-        onStartListening={handleStartListening}
-        isListening={isListening}
         isDisabled={isMessageLimitReached || isDemoEnded}
       />
     </div>

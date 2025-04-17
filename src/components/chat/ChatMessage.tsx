@@ -1,12 +1,22 @@
-
+import { MessageType } from "@/types/chat";
 import { User } from "lucide-react";
-import { Message, MessageType } from "@/types/chat";
+import { SpeechBubble } from "./SpeechBubble";
 
 interface ChatMessageProps {
-  message: Message;
+  message: {
+    id: string;
+    type: MessageType;
+    content: string;
+    timestamp: string;
+  };
+  isSpeaking?: boolean;
 }
 
-export const ChatMessage = ({ message }: ChatMessageProps) => {
+export const ChatMessage = ({ message, isSpeaking = false }: ChatMessageProps) => {
+  if (message.type === MessageType.ASSISTANT && isSpeaking) {
+    return <SpeechBubble isSpeaking={true} />;
+  }
+
   return (
     <div className={`flex ${message.type === MessageType.USER ? "justify-end" : "justify-start"}`}>
       {message.type === MessageType.ASSISTANT && (
@@ -19,7 +29,7 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
         </div>
       )}
       
-      <div className={`max-w-[80%] px-4 py-3 rounded-2xl ${
+      <div className={`max-w-[80%] px-4 py-3 rounded-2xl animate-in slide-in-from-bottom-2 duration-300 ${
         message.type === MessageType.USER 
           ? "bg-blue-500 text-white" 
           : "bg-gray-100 text-gray-800"

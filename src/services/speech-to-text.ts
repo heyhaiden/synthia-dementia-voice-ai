@@ -1,50 +1,130 @@
-
 /**
- * Speech-to-text service using OpenAI Whisper API
+ * Speech-to-text service using Web Speech API for real-time transcription
  */
+
+interface TranscriptionResponse {
+  text: string;
+  error?: string;
+}
 
 // Mock healthcare knowledge to help with response generation in dev mode
 const HEALTHCARE_TOPICS = ["sundowning", "medication management", "communication", "activities", "caregiver stress"];
 
 /**
- * Converts speech audio to text using OpenAI's Whisper API
+ * Creates a SpeechRecognition instance.
+ * Falls back to webkitSpeechRecognition if necessary.
+ */
+export const createSpeechRecognition = (): SpeechRecognition | null => {
+  if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+    console.error("Speech recognition not supported in this browser");
+    return null;
+  }
+
+  const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+  return new SpeechRecognitionAPI();
+};
+
+/**
+ * Starts real-time speech recognition
+ * @param onInterimResult Callback for interim results
+ * @param onFinalResult Callback for final result
+ * @param onError Callback for errors
+ * @returns The SpeechRecognition instance or null if not supported
+ */
+export const startSpeechRecognition = (
+  onInterimResult: (text: string) => void,
+  onFinalResult: (text: string) => void,
+  onError?: (error: string) => void
+): SpeechRecognition | null => {
+  const recognition = createSpeechRecognition();
+  
+  if (!recognition) {
+    if (onError) onError("Speech recognition not supported in this browser");
+    return null;
+  }
+  
+  // Configure the recognition
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = 'en-US';
+  
+  // Handle results
+  recognition.onresult = (event) => {
+    let interimTranscript = '';
+    let finalTranscript = '';
+    
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const transcript = event.results[i][0].transcript;
+      
+      if (event.results[i].isFinal) {
+        finalTranscript += transcript;
+      } else {
+        interimTranscript += transcript;
+      }
+    }
+    
+    if (interimTranscript) {
+      onInterimResult(interimTranscript);
+    }
+    
+    if (finalTranscript) {
+      onFinalResult(finalTranscript);
+    }
+  };
+  
+  // Handle errors
+  recognition.onerror = (event) => {
+    console.error("Speech recognition error:", event.error);
+    if (onError) onError(event.error);
+  };
+  
+  // Start recognition
+  try {
+    recognition.start();
+  } catch (error) {
+    console.error("Failed to start speech recognition:", error);
+    if (onError) onError("Failed to start speech recognition");
+    return null;
+  }
+  
+  return recognition;
+};
+
+/**
+ * Stops speech recognition
+ * @param recognition The SpeechRecognition instance to stop
+ */
+export const stopSpeechRecognition = (recognition: SpeechRecognition | null): void => {
+  if (recognition) {
+    try {
+      recognition.stop();
+    } catch (error) {
+      console.error("Error stopping speech recognition:", error);
+    }
+  }
+};
+
+/**
+ * Legacy function to maintain compatibility with existing code
  * @param audioBlob The audio blob to transcribe
  * @returns Promise resolving to the transcribed text
  */
 export const speechToText = async (audioBlob: Blob): Promise<string> => {
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-  
-  // For development, return mock results if no API key is available
-  if (!apiKey) {
-    console.log("Dev mode: Using mock speech-to-text response");
-    return mockSpeechToText(audioBlob);
-  }
-  
-  try {
-    const formData = new FormData();
-    formData.append("file", audioBlob, "audio.webm");
-    formData.append("model", "whisper-1");
-    
-    const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`
-      },
-      body: formData
-    });
-    
-    if (!response.ok) {
-      const error = await response.json();
-      console.error("Speech-to-text API error:", error);
-      throw new Error(`Speech-to-text error: ${error.error?.message || "Unknown error"}`);
-    }
-    
-    const data = await response.json();
-    return data.text;
-  } catch (error) {
-    console.error("Failed to transcribe audio:", error);
-    throw new Error("Failed to transcribe audio. Please try again.");
-  }
+  console.log("Using fallback speechToText method - consider using real-time recognition instead");
+  return mockSpeechToText(audioBlob);
+};
+
+/**
+ * Legacy function to maintain compatibility with existing code
+ * @param audioChunks Array of audio chunks to transcribe
+ * @param onTranscription Callback for transcription updates
+ */
+export const streamToWhisper = async (
+  audioChunks: Blob[],
+  onTranscription: (text: string) => void
+): Promise<void> => {
+  console.log("Using fallback streamToWhisper method - consider using real-time recognition instead");
+  return mockStreamToWhisper(audioChunks, onTranscription);
 };
 
 /**
@@ -64,4 +144,18 @@ const mockSpeechToText = async (audioBlob: Blob): Promise<string> => {
   ];
   
   return topics[Math.floor(Math.random() * topics.length)];
+};
+
+/**
+ * Mock implementation for streaming transcription
+ */
+const mockStreamToWhisper = async (
+  audioChunks: Blob[],
+  onTranscription: (text: string) => void
+): Promise<void> => {
+  // Simulate processing time
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  
+  const mockText = "This is a mock transcription of your voice input.";
+  onTranscription(mockText);
 };

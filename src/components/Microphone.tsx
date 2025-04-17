@@ -1,93 +1,130 @@
 import { useState, useRef, useEffect } from "react";
-import { Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { speechToText } from "@/services/ai-services";
+import { Mic, MicOff } from "lucide-react";
+import { startSpeechRecognition, stopSpeechRecognition } from "@/services/speech-to-text";
 
-interface MicrophoneProps {
-  onTranscriptionComplete: (text: string) => void;
-  isDisabled?: boolean;
+// Add type definitions for Web Speech API
+declare global {
+  interface Window {
+    SpeechRecognition: typeof SpeechRecognition;
+    webkitSpeechRecognition: typeof SpeechRecognition;
+  }
 }
 
-export const Microphone = ({ onTranscriptionComplete, isDisabled = false }: MicrophoneProps) => {
+interface MicrophoneProps {
+  onTranscription: (text: string) => void;
+  disabled?: boolean;
+}
+
+export const Microphone = ({ onTranscription, disabled = false }: MicrophoneProps) => {
   const [isRecording, setIsRecording] = useState(false);
-  const [transcription, setTranscription] = useState("");
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const streamRef = useRef<MediaStream | null>(null);
-
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      streamRef.current = stream;
-      
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
-      
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
-      
-      mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-        try {
-          const text = await speechToText(audioBlob);
-          if (text) {
-            setTranscription(text);
-            onTranscriptionComplete(text);
-          }
-        } catch (error) {
-          console.error("Speech-to-text error:", error);
-        }
-      };
-      
-      mediaRecorder.start();
-      setIsRecording(true);
-    } catch (error) {
-      console.error("Microphone access error:", error);
-    }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-      
-      // Stop all tracks to release the microphone
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-    }
-  };
+  const [isProcessing, setIsProcessing] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const finalTranscriptRef = useRef<string>("");
 
   useEffect(() => {
-    // Cleanup function to stop recording and release resources
     return () => {
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
-        mediaRecorderRef.current.stop();
-      }
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
+      // Cleanup on unmount
+      if (recognitionRef.current) {
+        stopSpeechRecognition(recognitionRef.current);
       }
     };
   }, []);
 
+  const startRecording = async () => {
+    try {
+      // Reset transcripts
+      finalTranscriptRef.current = "";
+
+      // Start Web Speech API recognition
+      const recognition = startSpeechRecognition(
+        // Interim results callback
+        (text) => {
+          // Update input with interim results
+          onTranscription(finalTranscriptRef.current + " " + text);
+        },
+        // Final results callback
+        (text) => {
+          finalTranscriptRef.current += " " + text;
+          onTranscription(finalTranscriptRef.current);
+        },
+        // Error callback
+        (error) => {
+          console.error("Speech recognition error:", error);
+          setIsRecording(false);
+          setIsProcessing(false);
+        }
+      );
+
+      if (recognition) {
+        recognitionRef.current = recognition;
+        setIsRecording(true);
+
+        // Set up end handler
+        recognition.onend = () => {
+          if (isRecording) {
+            const finalText = finalTranscriptRef.current.trim();
+            if (finalText) {
+              onTranscription(finalText);
+            }
+            setIsRecording(false);
+          }
+        };
+      }
+    } catch (error) {
+      console.error("Error starting speech recognition:", error);
+    }
+  };
+
+  const stopRecording = () => {
+    if (recognitionRef.current) {
+      setIsProcessing(true);
+      
+      // Get the final text
+      const finalText = finalTranscriptRef.current.trim();
+      
+      stopSpeechRecognition(recognitionRef.current);
+      recognitionRef.current = null;
+      
+      if (finalText) {
+        onTranscription(finalText);
+      }
+      
+      setIsRecording(false);
+      setIsProcessing(false);
+    }
+  };
+
+  const toggleRecording = () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="relative">
       <Button
-        variant={isRecording ? "destructive" : "outline"}
-        onClick={isRecording ? stopRecording : startRecording}
-        disabled={isDisabled}
-        className={`${isRecording ? "animate-pulse" : ""}`}
+        variant="outline"
+        size="icon"
+        onClick={toggleRecording}
+        disabled={disabled || isProcessing}
+        className={`relative ${isRecording ? "bg-red-100 hover:bg-red-200" : ""}`}
       >
-        {isRecording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+        {isRecording ? (
+          <>
+            <MicOff className="h-5 w-5" />
+            <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full animate-pulse" />
+          </>
+        ) : (
+          <Mic className="h-5 w-5" />
+        )}
       </Button>
-      {isRecording && (
-        <div className="flex items-center space-x-1">
-          <div className="h-2 w-2 bg-red-500 animate-pulse rounded-full"></div>
-          <span className="text-sm text-gray-500">Recording...</span>
+      
+      {isProcessing && (
+        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-gray-500">
+          Processing...
         </div>
       )}
     </div>

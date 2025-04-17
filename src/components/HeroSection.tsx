@@ -92,7 +92,7 @@ export const HeroSection = ({ onStartDemo, showDemo }: HeroSectionProps) => {
                 <img 
                   src="https://images.unsplash.com/photo-1498050108023-c5249f4df085" 
                   alt="Healthcare AI Technology" 
-                  className="w-full max-w-md h-[600px] object-cover rounded-lg shadow-lg"
+                  className="w-full max-w-md h-[600px] object-cover rounded-lg shadow-lg ml-8"
                 />
               </div>
             </div>

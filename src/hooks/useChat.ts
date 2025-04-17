@@ -57,6 +57,7 @@ export const useChat = () => {
       
       setIsTyping(false);
       setMessages(prev => [...prev, assistantMessage]);
+      setInputValue(""); // Clear input value after receiving response
       
       // Generate voice response if text-to-speech is available
       if (assistantMessage.content) {
@@ -71,6 +72,7 @@ export const useChat = () => {
       }
     } catch (error) {
       setIsTyping(false);
+      setInputValue(""); // Clear input value on error
       console.error("Error processing message:", error);
     }
   };
@@ -88,6 +90,7 @@ export const useChat = () => {
       if (audioUrl && audioUrl !== "mock-audio-url.mp3") {
         const audio = new Audio(audioUrl);
         
+        // Clean up URL when done
         audio.onended = () => {
           setIsPlaying(false);
           URL.revokeObjectURL(audioUrl);
@@ -98,13 +101,14 @@ export const useChat = () => {
           URL.revokeObjectURL(audioUrl);
         };
         
+        // Start playback immediately
         await audio.play();
       } else {
         simulateVoicePlayback(text);
       }
     } catch (error) {
-      setIsPlaying(false);
       console.error("Text-to-speech error:", error);
+      setIsPlaying(false);
     }
   };
 

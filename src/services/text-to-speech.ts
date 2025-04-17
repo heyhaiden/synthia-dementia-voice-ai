@@ -9,6 +9,30 @@ interface ElevenLabsOptions {
   similarityBoost?: number;
 }
 
+// Maximum characters per chunk for optimal processing
+const CHUNK_SIZE = 200;
+
+/**
+ * Splits text into chunks for parallel processing
+ */
+const chunkText = (text: string): string[] => {
+  const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+  const chunks: string[] = [];
+  let currentChunk = '';
+
+  for (const sentence of sentences) {
+    if (currentChunk.length + sentence.length > CHUNK_SIZE) {
+      if (currentChunk) chunks.push(currentChunk.trim());
+      currentChunk = sentence;
+    } else {
+      currentChunk += sentence;
+    }
+  }
+  
+  if (currentChunk) chunks.push(currentChunk.trim());
+  return chunks;
+};
+
 /**
  * Converts text to speech using ElevenLabs API
  * @param text The text to convert to speech
@@ -18,13 +42,18 @@ interface ElevenLabsOptions {
 export const textToSpeech = async (
   text: string, 
   options: ElevenLabsOptions = {
-    voiceId: import.meta.env.VITE_ELEVENLABS_VOICE_ID || "21m00Tcm4TlvDq8ikWAM", // Use env variable or default
-    model: "eleven_monolingual_v1",
-    stability: 0.5,
+    voiceId: import.meta.env.VITE_ELEVENLABS_VOICE_ID,
+    model: "eleven_flash_2.5",
+    stability: 0.4,
     similarityBoost: 0.75
   }
 ): Promise<string> => {
   const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
+  
+  if (!apiKey) {
+    console.error("ElevenLabs API key is not set in environment variables");
+    throw new Error("API key is required for text-to-speech");
+  }
   
   // For development, return mock results if no API key is available
   if (!apiKey) {
@@ -33,37 +62,42 @@ export const textToSpeech = async (
   }
   
   try {
-    const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${options.voiceId}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "xi-api-key": apiKey
-        },
-        body: JSON.stringify({
-          text,
-          model_id: options.model || "eleven_monolingual_v1",
-          voice_settings: {
-            stability: options.stability || 0.5,
-            similarity_boost: options.similarityBoost || 0.75
-          }
-        })
-      }
+    // Split text into chunks
+    const chunks = chunkText(text);
+    
+    // Process chunks in parallel
+    const audioPromises = chunks.map(chunk => 
+      fetch(
+        `https://api.elevenlabs.io/v1/text-to-speech/${options.voiceId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "xi-api-key": apiKey
+          },
+          body: JSON.stringify({
+            text: chunk,
+            model_id: options.model,
+            voice_settings: {
+              stability: options.stability,
+              similarity_boost: options.similarityBoost
+            }
+          })
+        }
+      ).then(response => {
+        if (!response.ok) {
+          throw new Error(`Chunk processing failed: ${response.statusText}`);
+        }
+        return response.blob();
+      })
     );
     
-    if (!response.ok) {
-      const error = await response.text();
-      console.error("Text-to-speech API error:", error);
-      throw new Error(`Text-to-speech error: ${error || "Unknown error"}`);
-    }
+    // Wait for all chunks to be processed
+    const audioBlobs = await Promise.all(audioPromises);
     
-    // Get audio blob
-    const audioBlob = await response.blob();
-    
-    // Create a URL for the audio blob
-    const audioUrl = URL.createObjectURL(audioBlob);
-    return audioUrl;
+    // Combine all blobs into one
+    const combinedBlob = new Blob(audioBlobs, { type: 'audio/mpeg' });
+    return URL.createObjectURL(combinedBlob);
   } catch (error) {
     console.error("Failed to convert text to speech:", error);
     throw new Error("Failed to generate speech. Please try again.");

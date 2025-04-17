@@ -7,20 +7,16 @@ interface ChatInputProps {
   inputValue: string;
   onInputChange: (value: string) => void;
   onSend: () => void;
-  onStartListening: () => void;
-  isListening: boolean;
   isDisabled?: boolean;
 }
 
 export const ChatInput = ({ 
   inputValue, 
   onInputChange, 
-  onSend, 
-  onStartListening, 
-  isListening,
+  onSend,
   isDisabled = false
 }: ChatInputProps) => {
-  const handleTranscriptionComplete = (text: string) => {
+  const handleTranscription = (text: string) => {
     onInputChange(text);
   };
 
@@ -47,8 +43,8 @@ export const ChatInput = ({
           <Send className="h-5 w-5" />
         </Button>
         <Microphone
-          onTranscriptionComplete={handleTranscriptionComplete}
-          isDisabled={isDisabled}
+          onTranscription={handleTranscription}
+          disabled={isDisabled}
         />
       </div>
       {isDisabled && (
