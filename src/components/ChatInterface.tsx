@@ -12,6 +12,8 @@ export const ChatInterface = () => {
     isListening, 
     isTyping, 
     isPlaying,
+    isMessageLimitReached,
+    isDemoEnded,
     setInputValue,
     handleSendMessage,
     handleStartListening
@@ -51,6 +53,15 @@ export const ChatInterface = () => {
               </div>
             </div>
           )}
+          
+          {isDemoEnded && (
+            <div className="text-center my-4 p-4 bg-blue-50 border border-blue-100 rounded-lg">
+              <p className="text-sm text-blue-700">
+                This demo is limited to 5 messages. Thank you for trying the experience!
+              </p>
+            </div>
+          )}
+          
           <div ref={messagesEndRef} />
         </div>
       </div>
@@ -61,6 +72,7 @@ export const ChatInterface = () => {
         onSend={handleSendMessage}
         onStartListening={handleStartListening}
         isListening={isListening}
+        isDisabled={isMessageLimitReached || isDemoEnded}
       />
     </div>
   );

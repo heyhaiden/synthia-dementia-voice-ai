@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { toast } from "sonner";
 import { Message, MessageType } from "@/types/chat";
@@ -13,15 +12,22 @@ const INITIAL_MESSAGES: Message[] = [
   }
 ];
 
+// Maximum number of user messages allowed in the demo
+const MAX_USER_MESSAGES = 5;
+
 export const useChat = () => {
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [inputValue, setInputValue] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [userMessageCount, setUserMessageCount] = useState(0);
+  const [isDemoEnded, setIsDemoEnded] = useState(false);
+
+  const isMessageLimitReached = userMessageCount >= MAX_USER_MESSAGES;
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || isMessageLimitReached || isDemoEnded) return;
     
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -34,9 +40,21 @@ export const useChat = () => {
     setInputValue("");
     setIsTyping(true);
     
+    const newUserMessageCount = userMessageCount + 1;
+    setUserMessageCount(newUserMessageCount);
+    
     try {
+      // If this is the last allowed message, ask for a closing message
+      let messagesToSend = [...messages, userMessage];
+      let currentSystemPrompt;
+      
+      if (newUserMessageCount >= MAX_USER_MESSAGES) {
+        // Add system message to prompt the AI to wrap up the conversation
+        currentSystemPrompt = `As a sophisticated AI, your primary role is to embody the essence, personality, backstory, and motivations of Beatriz, an older woman living with progressive Alzheimers disease. This is the final message in our conversation. Please provide a warm, contextually relevant goodbye that acknowledges what we've discussed, written in the first person as Beatriz. Keep it to two sentences.`;
+      }
+      
       // Send to language model to get response
-      const assistantMessage = await processMessage([...messages, userMessage]);
+      const assistantMessage = await processMessage(messagesToSend, currentSystemPrompt);
       
       setIsTyping(false);
       setMessages(prev => [...prev, assistantMessage]);
@@ -44,6 +62,14 @@ export const useChat = () => {
       // Generate voice response if text-to-speech is available
       if (assistantMessage.content) {
         handleTextToSpeech(assistantMessage.content);
+      }
+      
+      // If we've reached the message limit, mark the demo as ended
+      if (newUserMessageCount >= MAX_USER_MESSAGES) {
+        setTimeout(() => {
+          setIsDemoEnded(true);
+          toast.info("This demo is limited to 5 messages. Thank you for trying the experience!");
+        }, 1000);
       }
     } catch (error) {
       setIsTyping(false);
@@ -53,6 +79,11 @@ export const useChat = () => {
   };
 
   const handleStartListening = async () => {
+    if (isMessageLimitReached || isDemoEnded) {
+      toast.info("This demo is limited to 5 messages. Thank you for trying the experience!");
+      return;
+    }
+    
     setIsListening(true);
     toast.info("Listening...");
     
@@ -173,6 +204,8 @@ export const useChat = () => {
     isListening,
     isTyping,
     isPlaying,
+    isMessageLimitReached,
+    isDemoEnded,
     setInputValue,
     handleSendMessage,
     handleStartListening,
