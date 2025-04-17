@@ -1,11 +1,11 @@
-
 import { Volume2 } from "lucide-react";
 
 interface ChatHeaderProps {
   isPlaying: boolean;
+  isApiConnected?: boolean;
 }
 
-export const ChatHeader = ({ isPlaying }: ChatHeaderProps) => {
+export const ChatHeader = ({ isPlaying, isApiConnected = false }: ChatHeaderProps) => {
   return (
     <div className="bg-blue-600 p-4 text-white flex items-center justify-between">
       <div className="flex items-center">
@@ -29,11 +29,11 @@ export const ChatHeader = ({ isPlaying }: ChatHeaderProps) => {
           <div className="h-3 w-1 bg-white animate-pulse rounded-full"></div>
         </div>
       ) : (
-        <div className="flex items-center bg-black/20 backdrop-blur-sm rounded-full px-4 py-2">
+        <div className={`flex items-center ${isApiConnected ? 'bg-green-500/20' : 'bg-black/20'} backdrop-blur-sm rounded-full px-4 py-2`}>
           <span className="text-white mr-3 text-sm font-medium">Voice Active</span>
           <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
+            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${isApiConnected ? 'bg-green-400' : 'bg-white'} opacity-75`}></span>
+            <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isApiConnected ? 'bg-green-400' : 'bg-white'}`}></span>
           </span>
         </div>
       )}

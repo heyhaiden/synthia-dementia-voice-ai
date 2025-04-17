@@ -17,6 +17,7 @@ export const ChatInterface = () => {
   } = useChat();
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isApiConnected = !!import.meta.env.VITE_ELEVENLABS_API_KEY;
   
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -24,7 +25,7 @@ export const ChatInterface = () => {
   
   return (
     <div className="w-full bg-white rounded-2xl overflow-hidden shadow-xl border border-gray-200">
-      <ChatHeader isPlaying={isPlaying} />
+      <ChatHeader isPlaying={isPlaying} isApiConnected={isApiConnected} />
       
       <div className="p-6 h-[600px] overflow-y-auto bg-gray-50 flex flex-col">
         <div className="flex-1 space-y-6">
