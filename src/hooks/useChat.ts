@@ -1,7 +1,8 @@
+
 import { useState } from "react";
 // import { toast } from "sonner";  // Commented out to prevent toasts
 import { Message, MessageType } from "@/types/chat";
-import { speechToText, processMessage, textToSpeech } from "@/services/ai-services";
+import { speechToText, SentimentAnalysis, processMessage, textToSpeech } from "@/services/ai-services";
 
 const INITIAL_MESSAGES: Message[] = [
   {
@@ -23,6 +24,7 @@ export const useChat = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [userMessageCount, setUserMessageCount] = useState(0);
   const [isDemoEnded, setIsDemoEnded] = useState(false);
+  const [lastSentiment, setLastSentiment] = useState<SentimentAnalysis | null>(null);
 
   const isMessageLimitReached = userMessageCount >= MAX_USER_MESSAGES;
 
@@ -51,6 +53,9 @@ export const useChat = () => {
       if (newUserMessageCount >= MAX_USER_MESSAGES) {
         // Add system message to prompt the AI to wrap up the conversation
         currentSystemPrompt = `As a sophisticated AI, your primary role is to embody the essence, personality, backstory, and motivations of Beatriz, an older woman living with progressive Alzheimers disease. This is the final message in our conversation. Please provide a warm, contextually relevant goodbye that acknowledges what we've discussed, written in the first person as Beatriz. Keep it to two sentences.`;
+      } else if (lastSentiment) {
+        // If we have sentiment data, include it in the system prompt
+        currentSystemPrompt = `As a sophisticated AI, your primary role is to embody the essence, personality, backstory, and motivations of Beatriz, an older woman living with progressive Alzheimers disease. The user's last message had a ${lastSentiment.sentiment} tone (sentiment score: ${lastSentiment.score}). Please adjust your response accordingly, showing more empathy for negative emotions or matching enthusiasm for positive ones.`;
       }
       
       // Send to language model to get response
@@ -110,15 +115,21 @@ export const useChat = () => {
         const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
         
         try {
-          // Convert speech to text
+          // Convert speech to text with sentiment analysis
           // Commented out toast to disable popup
           // toast.info("Processing your voice...");
-          const text = await speechToText(audioBlob);
+          const result = await speechToText(audioBlob);
           
-          if (text) {
+          if (result.text) {
+            // Store the sentiment analysis results
+            setLastSentiment(result.sentiment);
+            
+            // Log sentiment for debugging
+            console.log("Speech sentiment:", result.sentiment);
+            
             // Commented out toast to disable popup
             // toast.success("Voice captured!");
-            setInputValue(text);
+            setInputValue(result.text);
             
             // Automatically send message after a short delay
             setTimeout(() => {
