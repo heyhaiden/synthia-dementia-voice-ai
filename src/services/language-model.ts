@@ -1,4 +1,3 @@
-
 /**
  * Language model service using OpenAI's API
  */
@@ -58,7 +57,7 @@ export const processMessage = async (
       ...messages
         .filter(m => m.type !== MessageType.SYSTEM)
         .map(m => ({
-          role: m.type === MessageType.USER ? "user" : "assistant",
+          role: m.type === MessageType.USER ? "user" : "assistant" as "user" | "assistant",
           content: m.content
         }))
     ];
