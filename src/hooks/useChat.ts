@@ -2,13 +2,13 @@ import { useState } from "react";
 // import { toast } from "sonner";  // Commented out to prevent toasts
 import { Message, MessageType } from "@/types/chat";
 import { processMessage } from "@/services/ai-services";
-import { textToSpeech, streamTextToSpeech } from "@/services/text-to-speech";
+import { textToSpeech } from "@/services/text-to-speech";
 
 const INITIAL_MESSAGES: Message[] = [
   {
     id: "1",
     type: MessageType.ASSISTANT,
-    content: "Hello! I'm Synthia, your virtual caregiver assistant. How can I help you with dementia care today?",
+    content: "Hi! I'm Synthia, your dementia care companion. Before we dive into learning resources, I'd like to know: how are you feeling today?",
     timestamp: new Date().toISOString(),
   }
 ];
@@ -82,20 +82,23 @@ export const useChat = () => {
     try {
       setIsPlaying(true);
       
-      // Create audio context
-      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      // Create audio context with optimized settings
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)({
+        latencyHint: 'interactive',
+        sampleRate: 44100
+      });
       
-      // Get audio buffer from ElevenLabs
+      // Get audio buffer from ElevenLabs with optimized settings
       const audioBuffer = await textToSpeech(text, {
         voiceId: import.meta.env.VITE_ELEVENLABS_VOICE_ID,
         modelId: "eleven_multilingual_v2",
-        stability: 0.3,
-        similarityBoost: 0.5,
-        outputFormat: "mp3_44100_128",
-        speed: 1.2
+        stability: 0.2, // Reduced for faster generation
+        similarityBoost: 0.3, // Reduced for faster generation
+        outputFormat: "mp3_44100_96", // Reduced bitrate for faster loading
+        speed: 1.8 // Increased playback speed for faster conversation
       });
 
-      // Create and play audio source
+      // Create and play audio source with optimized settings
       const source = audioCtx.createBufferSource();
       source.buffer = audioBuffer;
       source.connect(audioCtx.destination);
@@ -106,7 +109,7 @@ export const useChat = () => {
         audioCtx.close();
       };
 
-      // Start playback
+      // Start playback immediately
       source.start(0);
 
     } catch (error) {
@@ -114,14 +117,6 @@ export const useChat = () => {
       setIsPlaying(false);
       // You might want to show an error message to the user here
     }
-  };
-
-  const simulateVoicePlayback = (text: string) => {
-    const duration = Math.min(Math.max(text.length * 50, 2000), 8000);
-    
-    setTimeout(() => {
-      setIsPlaying(false);
-    }, duration);
   };
 
   return {

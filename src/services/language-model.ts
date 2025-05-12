@@ -3,29 +3,161 @@
  */
 import { Message, MessageType } from "@/types/chat";
 
-// Mock healthcare knowledge base
-const HEALTHCARE_KNOWLEDGE = [
-  {
-    topic: "sundowning",
-    information: "Sundowning refers to increased confusion, anxiety, agitation, pacing, and disorientation beginning at dusk and continuing throughout the night. Strategies include maintaining consistent routines, increasing light exposure during the day, reducing noise and stimulation in the evening, and creating a calm environment."
-  },
-  {
-    topic: "medication management",
-    information: "Managing medications for dementia patients involves creating a consistent schedule, using pill organizers, setting reminders, monitoring for side effects, and regularly reviewing medications with healthcare providers."
-  },
-  {
-    topic: "communication",
-    information: "Effective communication with dementia patients includes speaking clearly and slowly, using simple sentences, maintaining eye contact, minimizing distractions, being patient, and using visual cues when helpful."
-  },
-  {
-    topic: "activities",
-    information: "Engaging activities for people with dementia could include music therapy, gentle exercise, looking at family photos, simple arts and crafts, or sensory activities like gardening or baking. Focus on activities that connect with their past interests and abilities."
-  },
-  {
-    topic: "caregiver stress",
-    information: "Self-care is crucial for caregivers. Try to schedule regular breaks, join a support group, ask for help from family and friends, and consider respite care options. Remember that taking care of yourself improves your ability to care for your loved one."
+interface KnowledgeBase {
+  modules: {
+    [key: string]: {
+      content: string;
+      topics: string[];
+    };
+  };
+  questions: {
+    [stage: string]: {
+      softSkills: string[];
+      hardSkills: string[];
+    };
+  };
+}
+
+// Import markdown files
+const modulesContent = await import('../../knowledge_docs/anonymized-alzheimers-modules.md?raw');
+const questionsContent = await import('../../knowledge_docs/anonymized-dementia-care-questions.md?raw');
+
+// Conversation state management
+interface ConversationState {
+  hasCheckedSentiment: boolean;
+  currentStage: 'early' | 'mid' | 'late' | null;
+  currentModule: number | null;
+  questionsAsked: Set<string>;
+}
+
+/**
+ * Gets the next appropriate question based on conversation state
+ */
+const getNextQuestion = (state: ConversationState, knowledgeBase: KnowledgeBase): string => {
+  // If we haven't checked sentiment yet, use a general question
+  if (!state.hasCheckedSentiment) {
+    return "How are you feeling today? I'd like to understand your current state of mind before we dive into the learning materials.";
   }
-];
+
+  // If we haven't determined the stage yet, ask about it
+  if (!state.currentStage) {
+    return "Which stage of dementia care would you like to focus on today: early, mid, or late stage?";
+  }
+
+  // Get questions for the current stage
+  const stageQuestions = knowledgeBase.questions[state.currentStage];
+  
+  // Find an unasked question
+  const unaskedSoftSkills = stageQuestions.softSkills.filter(q => !state.questionsAsked.has(q));
+  const unaskedHardSkills = stageQuestions.hardSkills.filter(q => !state.questionsAsked.has(q));
+  
+  // Prioritize soft skills questions
+  if (unaskedSoftSkills.length > 0) {
+    const question = unaskedSoftSkills[0];
+    state.questionsAsked.add(question);
+    return question;
+  }
+  
+  if (unaskedHardSkills.length > 0) {
+    const question = unaskedHardSkills[0];
+    state.questionsAsked.add(question);
+    return question;
+  }
+
+  // If we've asked all questions, suggest moving to the next module
+  if (state.currentModule === null) {
+    state.currentModule = 1;
+  } else if (state.currentModule < 3) {
+    state.currentModule++;
+  } else {
+    return "We've completed all the learning materials. Would you like to review any specific topics or discuss something else?";
+  }
+
+  // Get module content
+  const moduleContent = knowledgeBase.modules[state.currentStage]?.content;
+  if (moduleContent) {
+    return `Let's move on to Module ${state.currentModule}. ${moduleContent.split('\n')[0]}`;
+  }
+
+  return "I'm not sure what to ask next. Would you like to discuss something specific?";
+};
+
+/**
+ * Reads and parses the knowledge base from markdown files
+ */
+const loadKnowledgeBase = async (): Promise<KnowledgeBase> => {
+  const knowledgeBase: KnowledgeBase = {
+    modules: {},
+    questions: {}
+  };
+
+  try {
+    // Parse modules content
+    const moduleSections = modulesContent.default.split(/Module \d+:/);
+    moduleSections.forEach((section: string, index: number) => {
+      if (section.trim()) {
+        const stage = index === 1 ? 'early' : index === 2 ? 'mid' : 'late';
+        knowledgeBase.modules[stage] = {
+          content: section.trim(),
+          topics: extractTopics(section)
+        };
+      }
+    });
+    
+    // Parse questions content
+    const stages = ['early', 'mid', 'late'];
+    stages.forEach(stage => {
+      const stageRegex = new RegExp(`## ${stage.charAt(0).toUpperCase() + stage.slice(1)} Stage Questions`);
+      const stageSection = questionsContent.default.split(stageRegex)[1]?.split('##')[0] || '';
+      
+      knowledgeBase.questions[stage] = {
+        softSkills: extractQuestions(stageSection, 'Soft Skills'),
+        hardSkills: extractQuestions(stageSection, 'Hard Skills')
+      };
+    });
+
+    return knowledgeBase;
+  } catch (error) {
+    console.error('Error loading knowledge base:', error);
+    throw new Error('Failed to load knowledge base');
+  }
+};
+
+/**
+ * Extracts topics from a module section
+ */
+const extractTopics = (content: string): string[] => {
+  const topics: string[] = [];
+  const lines = content.split('\n');
+  
+  for (const line of lines) {
+    if (line.startsWith('- ')) {
+      topics.push(line.substring(2).trim());
+    }
+  }
+  
+  return topics;
+};
+
+/**
+ * Extracts questions from a section
+ */
+const extractQuestions = (content: string, section: string): string[] => {
+  const questions: string[] = [];
+  const sectionRegex = new RegExp(`### ${section}:([\\s\\S]*?)(?=###|$)`);
+  const match = content.match(sectionRegex);
+  
+  if (match) {
+    const lines = match[1].split('\n');
+    for (const line of lines) {
+      if (line.startsWith('- ')) {
+        questions.push(line.substring(2).trim());
+      }
+    }
+  }
+  
+  return questions;
+};
 
 interface OpenAIMessage {
   role: "system" | "user" | "assistant";
@@ -40,7 +172,24 @@ interface OpenAIMessage {
  */
 export const processMessage = async (
   messages: Message[],
-  systemPrompt: string = `As a sophisticated AI, your primary role is to embody the essence, personality, backstory, and motivations of Synthia, an older woman living with progressive Alzheimers disease. Keep your responses brief and conversational - aim for 1-2 short sentences maximum. Speak naturally, as if having a casual conversation. Avoid formal or clinical language. Share personal insights or experiences when relevant, but keep them concise. Let the conversation flow naturally based on the user's interests. Always end your response with a relevant follow-up question to encourage continued conversation and deeper engagement.`
+  systemPrompt: string = `You are a compassionate AI assistant focused on supporting dementia caregivers. Your primary goals are:
+1. First, check in with the caregiver about their emotional state and well-being
+2. Guide them through a structured learning experience about dementia care
+3. Use the provided question bank to facilitate meaningful discussions
+4. Present learning modules in a logical sequence
+5. Maintain a supportive and empathetic tone throughout
+6. Keep responses concise and focused on one topic at a time
+7. Always acknowledge the caregiver's feelings and experiences
+8. End each response with a relevant follow-up question to encourage continued engagement
+
+When starting a new conversation:
+1. Begin with a warm, empathetic greeting
+2. Acknowledge the challenging nature of caregiving
+3. Express genuine interest in their well-being
+4. Create a safe space for them to share their feelings
+5. Set expectations about the learning journey ahead
+
+IMPORTANT: Keep all responses under 2 sentences. Be direct and concise while maintaining empathy.`
 ): Promise<Message> => {
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
 
@@ -72,7 +221,10 @@ export const processMessage = async (
         model: "gpt-4o-mini",
         messages: openaiMessages,
         temperature: 0.7,
-        max_tokens: 500
+        max_tokens: 100, // Reduced for more concise responses
+        presence_penalty: 0.6, // Encourage more focused responses
+        frequency_penalty: 0.3, // Slightly reduce repetition
+        top_p: 0.9 // Slightly more focused sampling
       })
     });
 
@@ -116,32 +268,98 @@ const mockProcessMessage = async (
     return {
       id: Date.now().toString(),
       type: MessageType.ASSISTANT,
-      content: "Hello! How can I help you with dementia care today?",
+      content: "Hi! I'm Synthia, your dementia care companion. Before we dive into learning resources, I'd like to know: how are you feeling today?",
       timestamp: new Date().toISOString()
     };
   }
   
-  // Mock logic to generate a response based on user input
-  const userInput = lastUserMessage.content.toLowerCase();
-  let response = "I understand caring for someone with dementia can be challenging. Could you provide more details about your specific concern?";
-  
-  // Check if the user message contains any keywords from our knowledge base
-  for (const knowledge of HEALTHCARE_KNOWLEDGE) {
-    if (userInput.includes(knowledge.topic)) {
-      response = knowledge.information;
-      break;
+  try {
+    // Load knowledge base
+    const knowledgeBase = await loadKnowledgeBase();
+    
+    // Determine current stage from previous messages
+    let currentStage: 'early' | 'mid' | 'late' | null = null;
+    const previousMessages = messages.slice(0, -1);
+    for (const msg of previousMessages) {
+      if (msg.type === MessageType.USER) {
+        if (msg.content.toLowerCase().includes("early")) {
+          currentStage = "early";
+          break;
+        } else if (msg.content.toLowerCase().includes("mid")) {
+          currentStage = "mid";
+          break;
+        } else if (msg.content.toLowerCase().includes("late")) {
+          currentStage = "late";
+          break;
+        }
+      }
     }
+
+    // Calculate current step (1-5) based on message count
+    const currentStep = Math.min(Math.ceil(messages.length / 2), 5);
+    
+    // Get appropriate response based on current step
+    let response = "";
+    
+    switch (currentStep) {
+      case 1: // Initial feeling check
+        response = "Thank you for sharing. Let's focus on a specific stage of dementia care. Would you like to learn about early, mid, or late stage care?";
+        break;
+        
+      case 2: // Stage selection confirmation and first question
+        if (!currentStage) {
+          response = "Please choose a stage: early, mid, or late stage dementia care.";
+        } else {
+          const stageQuestions = knowledgeBase.questions[currentStage];
+          response = `Great choice! Let's focus on ${currentStage} stage care. ${stageQuestions.softSkills[0]}`;
+        }
+        break;
+        
+      case 3: // Second question
+        if (!currentStage) {
+          response = "Please choose a stage: early, mid, or late stage dementia care.";
+        } else {
+          const stageQuestions = knowledgeBase.questions[currentStage];
+          response = stageQuestions.hardSkills[0];
+        }
+        break;
+        
+      case 4: // Module introduction
+        if (!currentStage) {
+          response = "Please choose a stage: early, mid, or late stage dementia care.";
+        } else {
+          const moduleContent = knowledgeBase.modules[currentStage]?.content;
+          const firstLine = moduleContent?.split('\n')[0] || '';
+          response = `Let's dive into some key learning materials for ${currentStage} stage care. ${firstLine}`;
+        }
+        break;
+        
+      case 5: // Conclusion and call to action
+        if (!currentStage) {
+          response = "Please choose a stage: early, mid, or late stage dementia care.";
+        } else {
+          const moduleContent = knowledgeBase.modules[currentStage]?.content;
+          const keyPoints = moduleContent?.split('\n')
+            .filter((line: string) => line.startsWith('- '))
+            .slice(0, 2) || [];
+          response = `Thank you for exploring ${currentStage} stage dementia care with me. Here are two key takeaways: ${keyPoints.join(' ')} To continue your learning journey and access our full library of resources, request access at getsynthia.ai.`;
+        }
+        break;
+    }
+    
+    return {
+      id: Date.now().toString(),
+      type: MessageType.ASSISTANT,
+      content: response,
+      timestamp: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error("Error in mock message processing:", error);
+    return {
+      id: Date.now().toString(),
+      type: MessageType.ASSISTANT,
+      content: "I apologize, but I'm having trouble accessing the knowledge base right now. Please try again later.",
+      timestamp: new Date().toISOString()
+    };
   }
-  
-  // Add some variation for demo purposes
-  if (userInput.includes("help") && userInput.includes("sundowning")) {
-    response = "Sundowning can be challenging. Try these strategies: 1) Maintain a consistent daily routine, 2) Increase lighting before sunset, 3) Reduce noise and stimulation in the evening, 4) Play calming music, 5) Create a safe and comfortable environment. Would you like more specific advice on any of these approaches?";
-  }
-  
-  return {
-    id: Date.now().toString(),
-    type: MessageType.ASSISTANT,
-    content: response,
-    timestamp: new Date().toISOString()
-  };
 };

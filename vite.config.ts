@@ -1,4 +1,3 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -36,7 +35,11 @@ export default defineConfig(({ mode }) => ({
   },
   // Add this to bypass TypeScript errors during build
   build: {
-    // Skip type checking to avoid the referenced project error
-    skipTypeCheck: true
-  }
+    target: 'es2020',
+    outDir: 'dist',
+    assetsDir: 'assets',
+    emptyOutDir: true
+  },
+  // Add support for raw imports of markdown files
+  assetsInclude: ['**/*.md']
 }));

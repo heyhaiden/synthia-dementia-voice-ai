@@ -1,5 +1,5 @@
 /**
- * Speech-to-text service using Web Speech API for real-time transcription
+ * Speech-to-text service using OpenAI's Whisper API for transcription
  */
 
 interface TranscriptionResponse {
@@ -105,17 +105,47 @@ export const stopSpeechRecognition = (recognition: SpeechRecognition | null): vo
 };
 
 /**
- * Legacy function to maintain compatibility with existing code
+ * Transcribes audio using OpenAI's Whisper API
  * @param audioBlob The audio blob to transcribe
  * @returns Promise resolving to the transcribed text
  */
 export const speechToText = async (audioBlob: Blob): Promise<string> => {
-  console.log("Using fallback speechToText method - consider using real-time recognition instead");
-  return mockSpeechToText(audioBlob);
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+  
+  if (!apiKey) {
+    console.error("OpenAI API key not found");
+    return mockSpeechToText(audioBlob);
+  }
+
+  try {
+    const formData = new FormData();
+    formData.append('file', audioBlob, 'audio.webm');
+    formData.append('model', 'whisper-1');
+    formData.append('language', 'en');
+
+    const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(`Whisper API error: ${error.error?.message || response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.text;
+  } catch (error) {
+    console.error("Error transcribing audio:", error);
+    return mockSpeechToText(audioBlob);
+  }
 };
 
 /**
- * Legacy function to maintain compatibility with existing code
+ * Streams audio chunks to Whisper API for transcription
  * @param audioChunks Array of audio chunks to transcribe
  * @param onTranscription Callback for transcription updates
  */
@@ -123,8 +153,41 @@ export const streamToWhisper = async (
   audioChunks: Blob[],
   onTranscription: (text: string) => void
 ): Promise<void> => {
-  console.log("Using fallback streamToWhisper method - consider using real-time recognition instead");
-  return mockStreamToWhisper(audioChunks, onTranscription);
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+  
+  if (!apiKey) {
+    console.error("OpenAI API key not found");
+    return mockStreamToWhisper(audioChunks, onTranscription);
+  }
+
+  try {
+    // Combine audio chunks into a single blob
+    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+    
+    const formData = new FormData();
+    formData.append('file', audioBlob, 'audio.webm');
+    formData.append('model', 'whisper-1');
+    formData.append('language', 'en');
+
+    const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(`Whisper API error: ${error.error?.message || response.statusText}`);
+    }
+
+    const data = await response.json();
+    onTranscription(data.text);
+  } catch (error) {
+    console.error("Error streaming audio to Whisper:", error);
+    return mockStreamToWhisper(audioChunks, onTranscription);
+  }
 };
 
 /**
