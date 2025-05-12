@@ -37,7 +37,7 @@ export const ChatInput = ({
         <Input
           value={inputValue}
           onChange={(e) => onInputChange(e.target.value)}
-          placeholder={isDisabled ? "Demo conversation limit reached" : "Type your message to Beatriz..."}
+          placeholder={isDisabled ? "Demo conversation limit reached" : "Type your message to Synthia..."}
           className="flex-1 h-9 text-sm"
           disabled={isDisabled}
           onKeyDown={(e) => {

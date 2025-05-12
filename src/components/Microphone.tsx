@@ -25,6 +25,7 @@ export const Microphone = ({
   const [isRecording, setIsRecording] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const finalTranscriptRef = useRef<string>("");
+  const isUpdatingRef = useRef(false);
 
   useEffect(() => {
     return () => {
@@ -36,12 +37,23 @@ export const Microphone = ({
   }, []);
 
   const updateRecordingState = (recording: boolean) => {
-    console.log("Updating recording state:", recording); // Debug log
-    setIsRecording(recording);
-    onRecordingStateChange?.(recording);
+    // Prevent duplicate state updates
+    if (isUpdatingRef.current || recording === isRecording) {
+      return;
+    }
+
+    isUpdatingRef.current = true;
+    try {
+      setIsRecording(recording);
+      onRecordingStateChange?.(recording);
+    } finally {
+      isUpdatingRef.current = false;
+    }
   };
 
   const startRecording = async () => {
+    if (isRecording || isUpdatingRef.current) return;
+
     try {
       // Reset transcripts
       finalTranscriptRef.current = "";
@@ -71,7 +83,9 @@ export const Microphone = ({
 
         // Set up end handler
         recognition.onend = () => {
-          updateRecordingState(false);
+          if (recognitionRef.current === recognition) {
+            updateRecordingState(false);
+          }
         };
       }
     } catch (error) {
@@ -81,6 +95,8 @@ export const Microphone = ({
   };
 
   const stopRecording = () => {
+    if (!isRecording || isUpdatingRef.current) return;
+
     if (recognitionRef.current) {
       // Ensure final transcript is sent
       if (finalTranscriptRef.current.trim()) {
@@ -95,7 +111,8 @@ export const Microphone = ({
   };
 
   const toggleRecording = () => {
-    console.log("Toggle recording, current state:", isRecording); // Debug log
+    if (isUpdatingRef.current) return;
+    
     if (isRecording) {
       stopRecording();
     } else {

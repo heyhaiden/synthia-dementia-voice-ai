@@ -1,4 +1,3 @@
-
 import { Brain, Mic, Volume2, BookOpen } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
@@ -34,7 +33,7 @@ export const Features = () => {
             Intelligence meets empathy
           </h2>
           <p className="text-xl text-gray-500 max-w-2xl mx-auto">
-            Beatriz combines cutting-edge AI with healthcare expertise to provide 
+            Synthia combines cutting-edge AI with healthcare expertise to provide 
             compassionate and reliable caregiver support.
           </p>
         </div>
@@ -90,7 +89,7 @@ export const Features = () => {
                     <p className="text-white font-medium">"How can I help with sundowning?"</p>
                   </div>
                   <div className="p-6 bg-white">
-                    <p className="font-medium text-gray-900 mb-4">Beatriz suggests:</p>
+                    <p className="font-medium text-gray-900 mb-4">Synthia suggests:</p>
                     <ul className="space-y-3 text-gray-600">
                       <li className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>

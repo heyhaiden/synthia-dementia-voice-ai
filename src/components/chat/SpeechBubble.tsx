@@ -26,10 +26,10 @@ export const SpeechBubble = ({ isSpeaking, className }: SpeechBubbleProps) => {
       "flex justify-start items-center space-x-2",
       className
     )}>
-      <div className="h-8 w-8 rounded-full bg-white p-0.5 mr-2 flex-shrink-0 shadow-sm border border-gray-200">
+      <div className="h-10 w-10 rounded-full bg-white p-0.5 mr-2 flex-shrink-0 shadow-sm border border-gray-200">
         <img 
-          src="/lovable-uploads/193f56c2-01c0-492f-a435-4eb3950c0277.png" 
-          alt="Beatriz Avatar" 
+          src="/lovable-uploads/synthia_icon.png" 
+          alt="Synthia Avatar" 
           className="h-full w-full object-cover rounded-full"
         />
       </div>

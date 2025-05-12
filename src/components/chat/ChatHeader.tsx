@@ -1,5 +1,3 @@
-import { Volume2 } from "lucide-react";
-
 interface ChatHeaderProps {
   isPlaying: boolean;
   isApiConnected?: boolean;
@@ -11,13 +9,13 @@ export const ChatHeader = ({ isPlaying, isApiConnected = false }: ChatHeaderProp
       <div className="flex items-center">
         <div className="h-10 w-10 rounded-full bg-white p-0.5 mr-3">
           <img 
-            src="/lovable-uploads/193f56c2-01c0-492f-a435-4eb3950c0277.png" 
-            alt="Beatriz Avatar" 
+            src="/lovable-uploads/synthia_icon.png" 
+            alt="Synthia Avatar" 
             className="h-full w-full object-cover rounded-full"
           />
         </div>
         <div>
-          <h2 className="font-semibold">Beatriz</h2>
+          <h2 className="font-semibold">Synthia</h2>
           <p className="text-xs opacity-80">Virtual Caregiver Assistant</p>
         </div>
       </div>

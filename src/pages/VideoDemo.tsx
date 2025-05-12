@@ -20,8 +20,8 @@ const VideoDemo = () => {
         </div>
         
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-semibold text-gray-900 mb-6 text-center">
-            Watch Beatriz in Action
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            Watch Synthia in Action
           </h1>
           <div className="aspect-video w-full rounded-lg overflow-hidden shadow-lg">
             <iframe
@@ -30,8 +30,8 @@ const VideoDemo = () => {
               className="w-full h-full"
             />
           </div>
-          <p className="mt-6 text-gray-600 text-center">
-            See how Beatriz helps healthcare professionals through natural voice conversations
+          <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+            See how Synthia helps healthcare professionals through natural voice conversations
           </p>
         </div>
       </div>

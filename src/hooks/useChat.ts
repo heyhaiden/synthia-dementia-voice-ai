@@ -1,13 +1,14 @@
 import { useState } from "react";
 // import { toast } from "sonner";  // Commented out to prevent toasts
 import { Message, MessageType } from "@/types/chat";
-import { processMessage, textToSpeech } from "@/services/ai-services";
+import { processMessage } from "@/services/ai-services";
+import { textToSpeech, streamTextToSpeech } from "@/services/text-to-speech";
 
 const INITIAL_MESSAGES: Message[] = [
   {
     id: "1",
     type: MessageType.ASSISTANT,
-    content: "Hello! I'm Beatriz, your virtual caregiver assistant. How can I help you with dementia care today?",
+    content: "Hello! I'm Synthia, your virtual caregiver assistant. How can I help you with dementia care today?",
     timestamp: new Date().toISOString(),
   }
 ];
@@ -49,7 +50,7 @@ export const useChat = () => {
       
       if (newUserMessageCount >= MAX_USER_MESSAGES) {
         // Add system message to prompt the AI to wrap up the conversation
-        currentSystemPrompt = `As a sophisticated AI, your primary role is to embody the essence, personality, backstory, and motivations of Beatriz, an older woman living with progressive Alzheimers disease. This is the final message in our conversation. Please provide a warm, contextually relevant goodbye that acknowledges what we've discussed, written in the first person as Beatriz. Keep it to two sentences.`;
+        currentSystemPrompt = `As a sophisticated AI, your primary role is to embody the essence, personality, backstory, and motivations of Synthia, an older woman living with progressive Alzheimers disease. This is the final message in our conversation. Please provide a warm, contextually relevant goodbye that acknowledges what we've discussed, written in the first person as Synthia. Keep it to two sentences.`;
       }
       
       // Send to language model to get response
@@ -81,34 +82,37 @@ export const useChat = () => {
     try {
       setIsPlaying(true);
       
-      // Convert text to speech
-      const audioUrl = await textToSpeech(text, {
-        voiceId: import.meta.env.VITE_ELEVENLABS_VOICE_ID,
-      });
+      // Create audio context
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
       
-      // Play audio if a valid URL is returned
-      if (audioUrl && audioUrl !== "mock-audio-url.mp3") {
-        const audio = new Audio(audioUrl);
-        
-        // Clean up URL when done
-        audio.onended = () => {
-          setIsPlaying(false);
-          URL.revokeObjectURL(audioUrl);
-        };
-        
-        audio.onerror = () => {
-          setIsPlaying(false);
-          URL.revokeObjectURL(audioUrl);
-        };
-        
-        // Start playback immediately
-        await audio.play();
-      } else {
-        simulateVoicePlayback(text);
-      }
+      // Get audio buffer from ElevenLabs
+      const audioBuffer = await textToSpeech(text, {
+        voiceId: import.meta.env.VITE_ELEVENLABS_VOICE_ID,
+        modelId: "eleven_multilingual_v2",
+        stability: 0.3,
+        similarityBoost: 0.5,
+        outputFormat: "mp3_44100_128",
+        speed: 1.2
+      });
+
+      // Create and play audio source
+      const source = audioCtx.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(audioCtx.destination);
+      
+      // Set up end handler
+      source.onended = () => {
+        setIsPlaying(false);
+        audioCtx.close();
+      };
+
+      // Start playback
+      source.start(0);
+
     } catch (error) {
       console.error("Text-to-speech error:", error);
       setIsPlaying(false);
+      // You might want to show an error message to the user here
     }
   };
 

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Features } from "@/components/Features";
@@ -11,7 +10,7 @@ const Index = () => {
   
   const handleStartDemo = () => {
     navigate("/demo");
-    toast.success("Demo mode activated. Try speaking to Beatriz!");
+    toast.success("Demo mode activated. Try speaking to Synthia!");
   };
 
   return (
