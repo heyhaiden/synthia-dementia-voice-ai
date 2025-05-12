@@ -7,8 +7,7 @@ import Index from "./pages/Index";
 import Demo from "./pages/Demo";
 import VideoDemo from "./pages/VideoDemo";
 import NotFound from "./pages/NotFound";
-import { ChatInterface } from "@/components/ChatInterface";
-import { AudioProvider } from "@/contexts/AudioContext";
+import { AudioProvider } from "./contexts/AudioContext";
 
 const queryClient = new QueryClient();
 
