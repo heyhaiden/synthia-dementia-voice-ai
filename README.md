@@ -1,11 +1,9 @@
 # Synthia - AI-Powered Healthcare Assistant
 ![Synthia Hero](public/lovable-uploads/synthia_hero_screenshot.png)
 
-A sophisticated conversational AI platform designed to provide personalized support for healthcare professionals and caregivers, with a special focus on dementia care.
-
 ## Overview
 
-Synthia combines advanced AI capabilities with healthcare expertise to deliver an empathetic and intelligent virtual assistant. The platform leverages state-of-the-art language models and voice processing technologies to provide meaningful support in healthcare scenarios.
+Synthia is a real-time voice AI assistant that combines OpenAI's Whisper for speech-to-text, ElevenLabs for text-to-speech, and GPT-4 for natural conversation. The platform delivers an empathetic and intelligent virtual assistant specifically trained for healthcare scenarios, with a focus on dementia care support.
 
 ## Demo & Visuals
 
