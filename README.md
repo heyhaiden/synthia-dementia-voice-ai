@@ -11,9 +11,7 @@ Synthia is a real-time voice AI assistant that combines OpenAI's Whisper for spe
 ![Chat Interface](public/lovable-uploads/synthia_demo_screenshot.png)
 
 ### Video Playthrough
-<div align="center">
-  [![Watch Demo Video](https://cdn.loom.com/sessions/thumbnails/b0935f9d8f7b40518a36d53fe47cc6b8-207afc948ed82fb3-full-play.gif)](https://www.loom.com/share/b0935f9d8f7b40518a36d53fe47cc6b8)
-</div>
+[Watch Demo Video](https://www.loom.com/share/b0935f9d8f7b40518a36d53fe47cc6b8?sid=020f482d-0a09-4e26-8a42-66f3eb6a1489)
 
 ## Technical Architecture
 
