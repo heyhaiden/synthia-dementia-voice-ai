@@ -1,4 +1,5 @@
 # Synthia - AI-Powered Healthcare Assistant
+![Synthia Hero](public/lovable-uploads/synthia_hero_screenshot.png)
 
 A sophisticated conversational AI platform designed to provide personalized support for healthcare professionals and caregivers, with a special focus on dementia care.
 
@@ -8,12 +9,8 @@ Synthia combines advanced AI capabilities with healthcare expertise to deliver a
 
 ## Demo & Visuals
 
-![Synthia Hero](public/lovable-uploads/synthia_hero_screenshot.png)
-
-### Interactive Demo
+### Video Demo
 [![Watch Demo Video](https://cdn.loom.com/sessions/thumbnails/b0935f9d8f7b40518a36d53fe47cc6b8-207afc948ed82fb3-full-play.gif)](https://www.loom.com/share/b0935f9d8f7b40518a36d53fe47cc6b8)
-
-*voice-spark-chatbot-demo - 12 May 2025*
 
 ### Chat Interface
 ![Chat Interface](public/lovable-uploads/synthia_demo_screenshot.png)
