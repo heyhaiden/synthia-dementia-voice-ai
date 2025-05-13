@@ -5,13 +5,13 @@
 
 Synthia is a real-time voice AI assistant that combines OpenAI's Whisper for speech-to-text, ElevenLabs for text-to-speech, and GPT-4 for natural conversation. The platform delivers an empathetic and intelligent virtual assistant specifically trained for healthcare scenarios, with a focus on dementia care support.
 
-## Demo & Visuals
-
-### Video Demo
-[![Watch Demo Video](https://cdn.loom.com/sessions/thumbnails/b0935f9d8f7b40518a36d53fe47cc6b8-207afc948ed82fb3-full-play.gif)](https://www.loom.com/share/b0935f9d8f7b40518a36d53fe47cc6b8)
+## Demo
 
 ### Chat Interface
 ![Chat Interface](public/lovable-uploads/synthia_demo_screenshot.png)
+
+### Video Playthrough
+[![Watch Demo Video](https://cdn.loom.com/sessions/thumbnails/b0935f9d8f7b40518a36d53fe47cc6b8-207afc948ed82fb3-full-play.gif)](https://www.loom.com/share/b0935f9d8f7b40518a36d53fe47cc6b8)
 
 ## Technical Architecture
 
@@ -38,19 +38,6 @@ src/
 └── types/         # TypeScript type definitions
 ```
 
-## Setup
-
-### Environment Variables
-Create a `.env` file with the following variables:
-```
-# OpenAI API Configuration
-VITE_OPENAI_API_KEY=your_openai_api_key
-
-# ElevenLabs Configuration
-VITE_ELEVENLABS_API_KEY=your_elevenlabs_api_key
-VITE_ELEVENLABS_VOICE_ID=your_voice_id
-```
-
 ## Next Steps
 
 ### Immediate Priorities
@@ -65,5 +52,3 @@ VITE_ELEVENLABS_VOICE_ID=your_voice_id
 2. Custom voice model training with ElevenLabs
 3. Fine-tuned GPT models for healthcare-specific responses
 4. Integration with healthcare APIs for real-time data
-5. Advanced conversation analytics and insights
-6. Custom model training for healthcare scenarios
