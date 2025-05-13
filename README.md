@@ -11,12 +11,14 @@ Synthia is a real-time voice AI assistant that combines OpenAI's Whisper for spe
 ![Chat Interface](public/lovable-uploads/synthia_demo_screenshot.png)
 
 ### Video Playthrough
-[![Watch Demo Video](https://cdn.loom.com/sessions/thumbnails/b0935f9d8f7b40518a36d53fe47cc6b8-207afc948ed82fb3-full-play.gif)](https://www.loom.com/share/b0935f9d8f7b40518a36d53fe47cc6b8)
+<div align="center">
+  [![Watch Demo Video](https://cdn.loom.com/sessions/thumbnails/b0935f9d8f7b40518a36d53fe47cc6b8-207afc948ed82fb3-full-play.gif)](https://www.loom.com/share/b0935f9d8f7b40518a36d53fe47cc6b8)
+</div>
 
 ## Technical Architecture
 
 ### AI & Voice Processing Stack
-- **Language Model**: OpenAI GPT-4 API for contextual understanding and natural conversation
+- **Language Model**: OpenAI GPT-4o-mini for contextual understanding and natural conversation
 - **Speech-to-Text**: OpenAI Whisper API for accurate voice transcription
 - **Text-to-Speech**: ElevenLabs API for natural, human-like voice synthesis
 - **Audio Processing**: Web Audio API for real-time audio handling and playback
