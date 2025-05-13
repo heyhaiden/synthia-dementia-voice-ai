@@ -1,73 +1,74 @@
-# Welcome to your Lovable project
+# Synthia - AI-Powered Healthcare Assistant
 
-## Project info
+A sophisticated conversational AI platform designed to provide personalized support for healthcare professionals and caregivers, with a special focus on dementia care.
 
-**URL**: https://lovable.dev/projects/8f7c117a-798d-48e3-a481-1da5725d7a87
+## Overview
 
-## How can I edit this code?
+Synthia combines advanced AI capabilities with healthcare expertise to deliver an empathetic and intelligent virtual assistant. The platform leverages state-of-the-art language models and voice processing technologies to provide meaningful support in healthcare scenarios.
 
-There are several ways of editing your application.
+## Demo & Visuals
 
-**Use Lovable**
+![Synthia Hero](public/lovable-uploads/synthia_hero_screenshot.png)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/8f7c117a-798d-48e3-a481-1da5725d7a87) and start prompting.
+### Interactive Demo
+[![Watch Demo Video](https://cdn.loom.com/sessions/thumbnails/b0935f9d8f7b40518a36d53fe47cc6b8-207afc948ed82fb3-full-play.gif)](https://www.loom.com/share/b0935f9d8f7b40518a36d53fe47cc6b8)
 
-Changes made via Lovable will be committed automatically to this repo.
+*voice-spark-chatbot-demo - 12 May 2025*
 
-**Use your preferred IDE**
+### Chat Interface
+![Chat Interface](public/lovable-uploads/synthia_demo_screenshot.png)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Technical Architecture
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### AI & Voice Processing Stack
+- **Language Model**: OpenAI GPT-4 API for contextual understanding and natural conversation
+- **Speech-to-Text**: OpenAI Whisper API for accurate voice transcription
+- **Text-to-Speech**: ElevenLabs API for natural, human-like voice synthesis
+- **Audio Processing**: Web Audio API for real-time audio handling and playback
 
-Follow these steps:
+### Core AI Features
+- Real-time voice recognition using OpenAI Whisper
+- Natural voice synthesis powered by ElevenLabs
+- Contextual AI responses using OpenAI GPT-4
+- Seamless voice conversation pipeline
+- Healthcare-specific conversation context
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### Project Structure
+```
+src/
+├── services/      # AI and voice processing integrations
+│   ├── ai-services.ts    # OpenAI GPT-4 integration
+│   ├── speech-to-text.ts # OpenAI Whisper integration
+│   └── text-to-speech.ts # ElevenLabs integration
+└── types/         # TypeScript type definitions
 ```
 
-**Edit a file directly in GitHub**
+## Setup
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Environment Variables
+Create a `.env` file with the following variables:
+```
+# OpenAI API Configuration
+VITE_OPENAI_API_KEY=your_openai_api_key
 
-**Use GitHub Codespaces**
+# ElevenLabs Configuration
+VITE_ELEVENLABS_API_KEY=your_elevenlabs_api_key
+VITE_ELEVENLABS_VOICE_ID=your_voice_id
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Next Steps
 
-## What technologies are used for this project?
+### Immediate Priorities
+1. Implement comprehensive error handling for AI service failures
+2. Expand the healthcare knowledge base with domain-specific training
+3. Optimize voice processing latency
+4. Implement conversation history persistence
+5. Add fallback mechanisms for API outages
 
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/8f7c117a-798d-48e3-a481-1da5725d7a87) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Future Enhancements
+1. Multi-language support with Whisper's multilingual capabilities
+2. Custom voice model training with ElevenLabs
+3. Fine-tuned GPT models for healthcare-specific responses
+4. Integration with healthcare APIs for real-time data
+5. Advanced conversation analytics and insights
+6. Custom model training for healthcare scenarios
