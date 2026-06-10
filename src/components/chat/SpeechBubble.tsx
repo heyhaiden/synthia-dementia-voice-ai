@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface SpeechBubbleProps {
@@ -7,18 +6,6 @@ interface SpeechBubbleProps {
 }
 
 export const SpeechBubble = ({ isSpeaking, className }: SpeechBubbleProps) => {
-  const [dots, setDots] = useState(0);
-
-  useEffect(() => {
-    if (!isSpeaking) return;
-
-    const interval = setInterval(() => {
-      setDots((prev) => (prev + 1) % 4);
-    }, 500);
-
-    return () => clearInterval(interval);
-  }, [isSpeaking]);
-
   if (!isSpeaking) return null;
 
   return (

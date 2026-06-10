@@ -1,8 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Mic } from "lucide-react";
 import { Microphone } from "@/components/Microphone";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface VoiceInputProps {
   onTranscription: (text: string) => void;

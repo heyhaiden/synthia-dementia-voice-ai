@@ -4,15 +4,20 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 interface HeroSectionProps {
   showDemo: boolean;
+  onStartDemo?: () => void;
 }
 
-export const HeroSection = ({ showDemo }: HeroSectionProps) => {
+export const HeroSection = ({ showDemo, onStartDemo }: HeroSectionProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleDemoClick = () => {
     if (location.pathname === "/") {
-      navigate("/demo");
+      if (onStartDemo) {
+        onStartDemo();
+      } else {
+        navigate("/demo");
+      }
     } else {
       navigate("/");
     }
