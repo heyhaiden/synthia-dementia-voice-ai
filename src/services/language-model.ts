@@ -22,66 +22,6 @@ interface KnowledgeBase {
 const modulesContent = await import('../../knowledge_docs/anonymized-alzheimers-modules.md?raw');
 const questionsContent = await import('../../knowledge_docs/anonymized-dementia-care-questions.md?raw');
 
-// Conversation state management
-interface ConversationState {
-  hasCheckedSentiment: boolean;
-  currentStage: 'early' | 'mid' | 'late' | null;
-  currentModule: number | null;
-  questionsAsked: Set<string>;
-}
-
-/**
- * Gets the next appropriate question based on conversation state
- */
-const getNextQuestion = (state: ConversationState, knowledgeBase: KnowledgeBase): string => {
-  // If we haven't checked sentiment yet, use a general question
-  if (!state.hasCheckedSentiment) {
-    return "How are you feeling today? I'd like to understand your current state of mind before we dive into the learning materials.";
-  }
-
-  // If we haven't determined the stage yet, ask about it
-  if (!state.currentStage) {
-    return "Which stage of dementia care would you like to focus on today: early, mid, or late stage?";
-  }
-
-  // Get questions for the current stage
-  const stageQuestions = knowledgeBase.questions[state.currentStage];
-  
-  // Find an unasked question
-  const unaskedSoftSkills = stageQuestions.softSkills.filter(q => !state.questionsAsked.has(q));
-  const unaskedHardSkills = stageQuestions.hardSkills.filter(q => !state.questionsAsked.has(q));
-  
-  // Prioritize soft skills questions
-  if (unaskedSoftSkills.length > 0) {
-    const question = unaskedSoftSkills[0];
-    state.questionsAsked.add(question);
-    return question;
-  }
-  
-  if (unaskedHardSkills.length > 0) {
-    const question = unaskedHardSkills[0];
-    state.questionsAsked.add(question);
-    return question;
-  }
-
-  // If we've asked all questions, suggest moving to the next module
-  if (state.currentModule === null) {
-    state.currentModule = 1;
-  } else if (state.currentModule < 3) {
-    state.currentModule++;
-  } else {
-    return "We've completed all the learning materials. Would you like to review any specific topics or discuss something else?";
-  }
-
-  // Get module content
-  const moduleContent = knowledgeBase.modules[state.currentStage]?.content;
-  if (moduleContent) {
-    return `Let's move on to Module ${state.currentModule}. ${moduleContent.split('\n')[0]}`;
-  }
-
-  return "I'm not sure what to ask next. Would you like to discuss something specific?";
-};
-
 /**
  * Reads and parses the knowledge base from markdown files
  */
@@ -254,7 +194,7 @@ IMPORTANT: Keep all responses under 2 sentences. Be direct and concise while mai
  */
 const mockProcessMessage = async (
   messages: Message[],
-  systemPrompt: string
+  _systemPrompt: string
 ): Promise<Message> => {
   console.log("Processing message with mock language model...");
   

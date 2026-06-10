@@ -2,14 +2,6 @@
  * Speech-to-text service using OpenAI's Whisper API for transcription
  */
 
-interface TranscriptionResponse {
-  text: string;
-  error?: string;
-}
-
-// Mock healthcare knowledge to help with response generation in dev mode
-const HEALTHCARE_TOPICS = ["sundowning", "medication management", "communication", "activities", "caregiver stress"];
-
 /**
  * Creates a SpeechRecognition instance.
  * Falls back to webkitSpeechRecognition if necessary.
@@ -193,7 +185,7 @@ export const streamToWhisper = async (
 /**
  * Mock implementation for development purposes
  */
-const mockSpeechToText = async (audioBlob: Blob): Promise<string> => {
+const mockSpeechToText = async (_audioBlob: Blob): Promise<string> => {
   // Simulate processing time
   await new Promise(resolve => setTimeout(resolve, 1000));
   
@@ -213,7 +205,7 @@ const mockSpeechToText = async (audioBlob: Blob): Promise<string> => {
  * Mock implementation for streaming transcription
  */
 const mockStreamToWhisper = async (
-  audioChunks: Blob[],
+  _audioChunks: Blob[],
   onTranscription: (text: string) => void
 ): Promise<void> => {
   // Simulate processing time

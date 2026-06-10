@@ -84,7 +84,6 @@ export async function streamTextToSpeech(
     }
 
     const reader = response.body.getReader();
-    const decoder = new TextDecoder();
 
     while (true) {
       const { done, value } = await reader.read();
@@ -148,15 +147,3 @@ export async function textToSpeech(
   return audioContext.decodeAudioData(audioData);
 }
 
-/**
- * Mock implementation for development purposes
- */
-const mockTextToSpeech = async (text: string, voiceId: string): Promise<string> => {
-  console.log(`Converting text to speech using voice ID: ${voiceId}`);
-  
-  // Simulate processing time
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  // Return a mock audio URL - in a real implementation, this would be a Blob URL
-  return "mock-audio-url.mp3";
-};
